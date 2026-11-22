@@ -1,0 +1,307 @@
+"""
+build_data.py - Unifies NovaChat LQA & Eval raw files into src/data/novachat_data.json.
+
+Run from the repository root:
+    python scripts/build_data.py
+"""
+
+import csv
+import json
+import re
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+RAW_DIR = ROOT / "raw-data"
+OUT_PATH = ROOT / "src" / "data" / "novachat_data.json"
+
+# Pre-judge legacy regex pair (before replacing the negation regex with judge.py
+# and before broadening the billing-period regex with fecha/data de renovación).
+LEGACY_ACCESS_REGEX = {
+    "EC-005": r"(per[ií]odo|ciclo) (de facturación|que (ya )?has pagado)",
+    "EC-006": r"(període|cicle) (de facturació|que (ja )?has pagat)",
+}
+LEGACY_NEGATION_REGEX = {
+    "EC-005": r"\bno\b.{0,80}(reembols|devolv|devuelv|devoluci)",
+    "EC-006": r"\bno\b.{0,80}(reembors|reembols|retorn|torn)",
+}
+
+
+def load_csv(filename: str) -> list[dict]:
+    with (RAW_DIR / filename).open(encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def load_eval_cases() -> list[dict]:
+    path = RAW_DIR / "eval_cases.jsonl"
+    if not path.exists():
+        return []
+    cases = []
+    with path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            item = json.loads(line)
+            vars_obj = item.get("vars", {})
+            meta = item.get("metadata", {})
+            cases.append({
+                "case_id": vars_obj.get("case_id", ""),
+                "locale": vars_obj.get("locale", meta.get("locale", "")),
+                "question": vars_obj.get("question", ""),
+                "description": item.get("description", ""),
+                "intent": meta.get("intent", ""),
+                "risk": meta.get("risk", ""),
+                "linked_defects": meta.get("linked_defects", []),
+                "assertions": item.get("assert", []),
+            })
+    return cases
+
+
+def eval_legacy_regex_pair(case_id: str, answer: str) -> str:
+    acc_pat = LEGACY_ACCESS_REGEX.get(case_id)
+    neg_pat = LEGACY_NEGATION_REGEX.get(case_id)
+    if acc_pat and not re.search(acc_pat, answer, re.IGNORECASE | re.DOTALL):
+        return "FAIL"
+    if neg_pat and not re.search(neg_pat, answer, re.IGNORECASE | re.DOTALL):
+        return "FAIL"
+    return "PASS"
+
+
+def main() -> None:
+    defects_raw = load_csv("defect_log.csv")
+    reviews_raw = load_csv("human_review.csv")
+    calibration_raw = load_csv("judge_calibration_results.csv")
+    eval_cases = load_eval_cases()
+
+    with (RAW_DIR / "responses.json").open(encoding="utf-8") as f:
+        responses_raw = json.load(f)
+    with (RAW_DIR / "judge_verdicts.json").open(encoding="utf-8") as f:
+        judge_verdicts_raw = json.load(f)
+
+    judge_by_answer = {
+        v["answer"]: {
+            "verdict": v["verdict"],
+            "reason": v["reason"],
+            "judge_model": v["model"],
+            "cache_key": k,
+        }
+        for k, v in judge_verdicts_raw.items()
+    }
+
+    # 1. MQM Defects (28)
+    defects = []
+    for d in defects_raw:
+        auto = d["auto_check"].strip()
+        if auto == "manual":
+            detection_layer = "Human review"
+            linked_cases: list[str] = []
+        elif auto.startswith("eval set:"):
+            detection_layer = "Promptfoo evals"
+            linked_cases = [c.strip() for c in auto.replace("eval set:", "").split(",") if c.strip()]
+        else:
+            detection_layer = "Python UI checker"
+            linked_cases = []
+
+        defects.append({
+            "id": d["defect_id"].strip(),
+            "locale": d["locale"].strip(),
+            "content_type": d["content_type"].strip(),
+            "string_id": d["string_id"].strip() or None,
+            "source_or_reference": d["source_or_reference"].strip(),
+            "target_current": d["target_current"].strip(),
+            "mqm_category": d["mqm_category"].strip(),
+            "severity": d["severity"].strip(),
+            "explanation": d["explanation"].strip(),
+            "recommended_fix": d["recommended_fix"].strip(),
+            "rationale": d["rationale"].strip(),
+            "auto_check": auto,
+            "detection_layer": detection_layer,
+            "linked_cases": linked_cases,
+        })
+
+    # 2. Recorded Model Evaluations (72)
+    run_display_order = [
+        "baseline / gemini-3.5-flash-lite",
+        "grounded / gemini-3.5-flash-lite (run 1)",
+        "grounded / gemini-3.5-flash-lite",
+        "grounded / nemotron-3-ultra",
+        "grounded / gemini-3.8-flash",
+        "grounded / ernie-5.5-flash",
+    ]
+    run_labels = {
+        "baseline / gemini-3.5-flash-lite": {
+            "short_label": "Gemini 3.5 Flash-Lite (Baseline)",
+            "vendor": "Google · Gemini API",
+            "run_tag": "Baseline · Ungrounded",
+        },
+        "grounded / gemini-3.5-flash-lite (run 1)": {
+            "short_label": "Gemini 3.5 Flash-Lite (Run 1)",
+            "vendor": "Google · Gemini API",
+            "run_tag": "Grounded · Run 1",
+        },
+        "grounded / gemini-3.5-flash-lite": {
+            "short_label": "Gemini 3.5 Flash-Lite (Run 2)",
+            "vendor": "Google · Gemini API",
+            "run_tag": "Grounded · Run 2",
+        },
+        "grounded / nemotron-3-ultra": {
+            "short_label": "NVIDIA Nemotron 3 Ultra",
+            "vendor": "NVIDIA · OpenRouter",
+            "run_tag": "Grounded · Cross-vendor",
+        },
+        "grounded / gemini-3.8-flash": {
+            "short_label": "Gemini 3.8 Flash",
+            "vendor": "Google · Gemini API",
+            "run_tag": "Grounded",
+        },
+        "grounded / ernie-5.5-flash": {
+            "short_label": "Baidu ERNIE 5.5 Flash",
+            "vendor": "Baidu · OpenRouter",
+            "run_tag": "Grounded · Cross-vendor",
+        },
+    }
+
+    evaluations = []
+    for r in reviews_raw:
+        run_name = r["run"].strip()
+        case_id = r["case_id"].strip()
+        run_obj = responses_raw.get(run_name, {})
+        answer_text = run_obj.get("responses", {}).get(case_id, "")
+        failed_metrics = (
+            [m.strip() for m in r["auto_failed_metrics"].split("+") if m.strip()]
+            if r["auto_failed_metrics"].strip()
+            else []
+        )
+        auto_is_fail = r["auto_result"].strip() == "FAIL"
+        human_is_fail = r["human_verdict"].strip() == "FAIL"
+
+        evaluations.append({
+            "case_id": case_id,
+            "locale": r["locale"].strip(),
+            "run": run_name,
+            "short_label": run_labels.get(run_name, {}).get("short_label", run_name),
+            "vendor": run_labels.get(run_name, {}).get("vendor", ""),
+            "run_tag": run_labels.get(run_name, {}).get("run_tag", ""),
+            "prompt_type": "baseline" if run_name.startswith("baseline") else "grounded",
+            "model": run_obj.get("model", ""),
+            "answer": answer_text,
+            "auto_result": r["auto_result"].strip(),
+            "auto_failed_metrics": failed_metrics,
+            "human_verdict": r["human_verdict"].strip(),
+            "human_severity": r["human_severity"].strip() or None,
+            "human_notes": r["human_notes"].strip(),
+            "judge": judge_by_answer.get(answer_text),
+            "pass_fail_agree": auto_is_fail == human_is_fail,
+        })
+
+    runs_summary = []
+    for run_name in run_display_order:
+        if run_name not in responses_raw:
+            continue
+        rows = [e for e in evaluations if e["run"] == run_name]
+        meta = run_labels.get(run_name, {})
+        runs_summary.append({
+            "run": run_name,
+            "short_label": meta.get("short_label", run_name),
+            "vendor": meta.get("vendor", ""),
+            "run_tag": meta.get("run_tag", ""),
+            "prompt_type": "baseline" if run_name.startswith("baseline") else "grounded",
+            "model": responses_raw[run_name].get("model", ""),
+            "total": len(rows),
+            "auto_pass": sum(1 for e in rows if e["auto_result"] == "PASS"),
+            "auto_fail": sum(1 for e in rows if e["auto_result"] == "FAIL"),
+            "human_pass": sum(1 for e in rows if e["human_verdict"] == "PASS"),
+            "human_query": sum(1 for e in rows if e["human_verdict"] == "QUERY"),
+            "human_fail": sum(1 for e in rows if e["human_verdict"] == "FAIL"),
+            "human_non_fail": sum(1 for e in rows if e["human_verdict"] != "FAIL"),
+            "critical_fails": sum(1 for e in rows if e["human_severity"] == "Critical"),
+            "major_fails": sum(1 for e in rows if e["human_severity"] == "Major"),
+            "minor_fails": sum(1 for e in rows if e["human_severity"] == "Minor"),
+        })
+
+    # 3. Judge Calibration (20)
+    calibration = []
+    for c in calibration_raw:
+        legacy_rx = eval_legacy_regex_pair(c["case_id"].strip(), c["answer"])
+        human_lbl = c["human_label"].strip()
+        cur_rx = c["regex"].strip()
+        jdg = c["judge"].strip()
+        ste = c["suite"].strip()
+
+        calibration.append({
+            "id": c["id"].strip(),
+            "source": c["source"].strip(),
+            "is_trap": c["source"].strip() == "synthetic trap",
+            "case_id": c["case_id"].strip(),
+            "locale": c["locale"].strip(),
+            "human_label": human_lbl,
+            "legacy_regex": legacy_rx,
+            "current_regex": cur_rx,
+            "judge": jdg,
+            "suite": ste,
+            "legacy_regex_agree": legacy_rx == human_lbl,
+            "current_regex_agree": cur_rx == human_lbl,
+            "judge_agree": jdg == human_lbl,
+            "suite_agree": ste == human_lbl,
+            "note": c["note"].strip(),
+            "judge_reason": c["judge_reason"].strip(),
+            "answer": c["answer"],
+        })
+
+    cat_counts = Counter(d["mqm_category"] for d in defects)
+    category_breakdown = [
+        {"category": k, "count": v}
+        for k, v in sorted(cat_counts.items(), key=lambda x: (-x[1], x[0]))
+    ]
+
+    payload = {
+        "meta": {
+            "project": "NovaChat ES/CA — LQA & LLM Evaluation Dashboard",
+            "author": "Eduard Aliod Gil",
+            "repo_url": "https://github.com/EduardTranslates/novachat-es-ca-lqa",
+            "results_url": "https://github.com/EduardTranslates/novachat-es-ca-lqa/blob/main/evals/RESULTS.md",
+            "recording_note": responses_raw.get("_note", ""),
+            "judge_model": "gemini-3.5-flash",
+        },
+        "kpis": {
+            "total_defects": len(defects),
+            "defects_by_severity": dict(Counter(d["severity"] for d in defects)),
+            "defects_by_locale": dict(Counter(d["locale"] for d in defects)),
+            "defects_by_layer": dict(Counter(d["detection_layer"] for d in defects)),
+            "category_breakdown": category_breakdown,
+            "total_answers": len(evaluations),
+            "total_cases": len(eval_cases),
+            "total_runs": len(runs_summary),
+            "auto_human_agreement": sum(1 for e in evaluations if e["pass_fail_agree"]),
+            "disagreements_count": sum(1 for e in evaluations if not e["pass_fail_agree"]),
+            "query_count": sum(1 for e in evaluations if e["human_verdict"] == "QUERY"),
+            "grounded_fails_count": sum(
+                1 for e in evaluations if e["prompt_type"] == "grounded" and e["human_verdict"] == "FAIL"
+            ),
+            "baseline_critical_fails": sum(
+                1 for e in evaluations if e["prompt_type"] == "baseline" and e["human_severity"] == "Critical"
+            ),
+            "grounded_critical_fails": sum(
+                1 for e in evaluations if e["prompt_type"] == "grounded" and e["human_severity"] == "Critical"
+            ),
+            "calibration_total": len(calibration),
+            "calibration_legacy_regex_agree": sum(1 for c in calibration if c["legacy_regex_agree"]),
+            "calibration_current_regex_agree": sum(1 for c in calibration if c["current_regex_agree"]),
+            "calibration_judge_agree": sum(1 for c in calibration if c["judge_agree"]),
+            "calibration_suite_agree": sum(1 for c in calibration if c["suite_agree"]),
+        },
+        "cases": eval_cases,
+        "runs_summary": runs_summary,
+        "defects": defects,
+        "evaluations": evaluations,
+        "calibration": calibration,
+    }
+
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    OUT_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Generated {OUT_PATH} ({OUT_PATH.stat().st_size:,} bytes)")
+
+
+if __name__ == "__main__":
+    main()
