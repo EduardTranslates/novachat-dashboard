@@ -26,17 +26,4 @@ To regenerate `src/data/novachat_data.json` after updating any file in `raw-data
 python scripts/build_data.py
 ```
 
-## Deploy on Vercel
-
-1. Push this repository to GitHub (`novachat-dashboard`).
-2. Import the repository in [Vercel](https://vercel.com/new).
-3. Leave the default Next.js build settings (`npm run build`) and click **Deploy**.
-
-## Planned Next Iterations
-
-- **Phase 2:** Interactive ES/CA UI string checker powered by `lqa_checks.py` running as a Vercel Python Serverless Function.
-- **Phase 3:** Live NovaChat sandbox built with the Vercel AI SDK allowing visitors to toggle between ungrounded baseline and grounded prompts in real time.
-
----
-
 *Author: Eduard Aliod Gil — Localization Specialist & AI QA Reviewer (ES/CA/EN)*
