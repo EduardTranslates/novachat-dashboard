@@ -15,7 +15,7 @@ Interactive web application and live ES/CA localization QA lab built on top of t
 
 ## What You Can Explore
 
-### Row 1 — Start & Live Interactive Tools
+### Start & Live Interactive Tools
 1. **Executive Overview:** Core empirical finding (*"Grounding fixes facts. It doesn't fix language."*), 6-run performance across 4 distinct LLMs, 3-layer QA detection architecture, and methodological scope.
 2. **Project Story (30-Second Read):** A jargon-free, chart-free narrative walk-through (*When It Began · How It Works · What Happened · Why It Matters · Who Built This*) designed for non-technical localization and hiring teams.
 3. **Live NovaChat Sandbox (Phase 3):** Toggle in real time between the ungrounded **Baseline** prompt (`prompt_baseline.yaml`) and the **Grounded** P0 fix (`prompt.yaml`), or run **Compare Both** side by side. Every bot reply is automatically scanned by `lqa_checks.py`. Includes automatic model rotation, rate limiting, and graceful fallback to authentic recorded replays if free-tier quota is exhausted.
@@ -23,7 +23,7 @@ Interactive web application and live ES/CA localization QA lab built on top of t
    - **NovaChat Core (6 terms):** Exact parity with `qa_report.csv` (14 issues across 12 defective strings, 0 false positives on 8 clean strings).
    - **Extended SaaS & Support (56 terms):** Curated EN → `es-ES`/`ca-ES` UI and customer-support terminology, expanded Catalan Castilianism lists, and IEC 2016 obsolete diacritics — plus optional **Auto-Translate** and **AI Semantic & Grammar Audit (Layer 2)**.
 
-### Row 2 — Recorded Audit Evidence
+### Recorded Audit Evidence
 5. **MQM Defect Explorer (28 Defects):** Filterable inspector across `es-ES` and `ca-ES`, severity, MQM category, and detection layer, with before/after fixes and deep links to Promptfoo test cases.
 6. **4-Model Eval Comparator (72 Recorded Answers):** Side-by-side comparison across all 12 test cases (`EC-001`–`EC-012`) and a filterable 72-answer Audit Matrix isolating the 2 Catalan grammar blind spots, 6 Product Owner `QUERY` escalations, and 7 grounded failures.
 7. **LLM Judge Calibration (20 Answers):** Side-by-side comparison of the replaced regex pair (`14/20`), the broadened access regex alone (`16/20`), and the calibrated `gemini-3.5-flash` judge (`20/20`).
@@ -45,7 +45,6 @@ All static dashboard views and the **Python Live LQA Checker (Layer 1)** work wi
 | Variable | Required? | Purpose |
 | :--- | :--- | :--- |
 | `GEMINI_API_KEY` | Optional (enables Live AI) | Google AI Studio key for live chatbot replies, EN→ES/CA translation, and Layer 2 semantic LQA audits |
-| `OPENROUTER_API_KEY` | Optional (fallback) | Secondary free-tier fallback if Gemini daily quota is exhausted |
 | `GEMINI_CHAT_MODELS` | Optional | Comma-separated model rotation list (default: `gemini-3.5-flash-lite,gemini-3.8-flash,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-2.5-flash`) |
 | `GEMINI_LQA_MODELS` | Optional | Comma-separated model rotation list for Layer 2 semantic audits (default: `gemini-3.8-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-2.5-flash`) |
 
