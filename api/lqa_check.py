@@ -1,10 +1,9 @@
 """
 api/lqa_check.py - Vercel Python Serverless Function wrapping lqa_checks.py.
 
-Endpoints (served at /api/lqa_check on Vercel):
-  - GET  /api/lqa_check             -> engine health + metadata
-  - GET  /api/lqa_check?mode=batch  -> runs lqa_checks.py on all 20 sample strings
-  - POST /api/lqa_check             -> runs lqa_checks.py on a single string or batch
+Supports two glossary/rule profiles:
+  - "core":     Exact 6-term glossary & rules.json from novachat-es-ca-lqa (default for batch)
+  - "extended": 56-term SaaS & Customer Support ES/CA glossary + expanded CA interference lists
 
 Zero external dependencies (Python standard library only).
 """
@@ -17,21 +16,32 @@ from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-# Ensure sibling helper modules (_lqa_checks.py, _lqa_data.py) are always importable
 API_DIR = str(Path(__file__).resolve().parent)
 if API_DIR not in sys.path:
     sys.path.insert(0, API_DIR)
 
 from _lqa_checks import run  # noqa: E402
-from _lqa_data import GLOSSARY, RULES, SAMPLE_STRINGS  # noqa: E402
+from _lqa_data import (  # noqa: E402
+    EXTENDED_GLOSSARY,
+    EXTENDED_RULES,
+    GLOSSARY,
+    RULES,
+    SAMPLE_STRINGS,
+)
 
-CFG = {"rules": RULES, "glossary": GLOSSARY}
+CFG_PROFILES = {
+    "core": {"rules": RULES, "glossary": GLOSSARY},
+    "extended": {"rules": EXTENDED_RULES, "glossary": EXTENDED_GLOSSARY},
+}
 VALID_LOCALES = {"es-ES", "ca-ES"}
 
 
-def build_response(rows: list[dict]) -> dict:
+def build_response(rows: list[dict], profile: str = "core") -> dict:
+    chosen_profile = "extended" if profile == "extended" else "core"
+    cfg = CFG_PROFILES[chosen_profile]
+
     t0 = time.perf_counter()
-    issues = run(rows, CFG)
+    issues = run(rows, cfg)
     elapsed_ms = round((time.perf_counter() - t0) * 1000, 2)
 
     flagged_ids = {i["id"] for i in issues}
@@ -41,6 +51,8 @@ def build_response(rows: list[dict]) -> dict:
     return {
         "ok": True,
         "engine": "python-serverless",
+        "profile": chosen_profile,
+        "glossary_terms": len(cfg["glossary"]),
         "python_version": sys.version.split()[0],
         "elapsed_ms": elapsed_ms,
         "strings_checked": len(rows),
@@ -99,8 +111,9 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
         qs = parse_qs(urlparse(self.path).query)
         mode = qs.get("mode", ["health"])[0]
+        profile = qs.get("profile", ["core"])[0]
         if mode == "batch":
-            self._send_json(200, build_response(SAMPLE_STRINGS))
+            self._send_json(200, build_response(SAMPLE_STRINGS, profile=profile))
             return
 
         self._send_json(
@@ -110,7 +123,8 @@ class handler(BaseHTTPRequestHandler):
                 "engine": "python-serverless",
                 "python_version": sys.version.split()[0],
                 "checks_count": 8,
-                "glossary_terms": len(GLOSSARY),
+                "core_glossary_terms": len(GLOSSARY),
+                "extended_glossary_terms": len(EXTENDED_GLOSSARY),
                 "sample_strings": len(SAMPLE_STRINGS),
             },
         )
@@ -129,6 +143,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         mode = body.get("mode", "single")
+        profile = body.get("profile", "core")
         try:
             if mode == "batch":
                 incoming_rows = body.get("rows")
@@ -147,4 +162,4 @@ class handler(BaseHTTPRequestHandler):
             self._send_json(400, {"ok": False, "error": str(err)})
             return
 
-        self._send_json(200, build_response(rows))
+        self._send_json(200, build_response(rows, profile=profile))

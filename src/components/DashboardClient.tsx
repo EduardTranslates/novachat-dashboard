@@ -4,20 +4,31 @@ import React, { useState } from "react";
 import {
   BarChart3,
   BookOpen,
+  Bot,
   Cpu,
   ExternalLink,
   FileSearch,
   Github,
+  Linkedin,
   Scale,
   Terminal,
 } from "lucide-react";
 import { OverviewTab } from "./OverviewTab";
 import { ProjectStoryTab } from "./ProjectStoryTab";
+import { ChatbotTab } from "./ChatbotTab";
+import { LiveCheckerTab } from "./LiveCheckerTab";
 import { DefectsTab } from "./DefectsTab";
 import { ComparatorTab } from "./ComparatorTab";
 import { CalibrationTab } from "./CalibrationTab";
-import { LiveCheckerTab } from "./LiveCheckerTab";
 import type { MatrixPreset, NovaChatData, TabId } from "@/types/novachat";
+
+interface NavTabDef {
+  id: TabId;
+  label: string;
+  badge?: string;
+  badgeAccent?: "emerald" | "violet" | "sky" | "default";
+  icon: React.ReactNode;
+}
 
 export function DashboardClient({ data }: { data: NovaChatData }) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
@@ -64,13 +75,8 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const tabs: {
-    id: TabId;
-    label: string;
-    badge?: string;
-    badgeAccent?: "emerald" | "sky" | "default";
-    icon: React.ReactNode;
-  }[] = [
+  // Row 1: Entry points & Live Interactive Tools (front-and-center, never pushed off-screen)
+  const primaryTabs: NavTabDef[] = [
     {
       id: "overview",
       label: "Executive Overview",
@@ -84,22 +90,11 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
       icon: <BookOpen className="h-4 w-4" />,
     },
     {
-      id: "defects",
-      label: "MQM Defect Explorer",
-      badge: String(data.kpis.total_defects),
-      icon: <FileSearch className="h-4 w-4" />,
-    },
-    {
-      id: "comparator",
-      label: "4-Model Eval Comparator",
-      badge: String(data.kpis.total_answers),
-      icon: <Cpu className="h-4 w-4" />,
-    },
-    {
-      id: "calibration",
-      label: "LLM Judge Calibration",
-      badge: `${data.kpis.calibration_judge_agree}/${data.kpis.calibration_total}`,
-      icon: <Scale className="h-4 w-4" />,
+      id: "sandbox",
+      label: "Live NovaChat Sandbox",
+      badge: "Live AI",
+      badgeAccent: "violet",
+      icon: <Bot className="h-4 w-4" />,
     },
     {
       id: "checker",
@@ -110,12 +105,64 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
     },
   ];
 
+  // Row 2: Recorded Audit Evidence & Calibration Deep-Dive
+  const auditTabs: NavTabDef[] = [
+    {
+      id: "defects",
+      label: "MQM Defect Explorer",
+      badge: String(data.kpis.total_defects),
+      icon: <FileSearch className="h-3.5 w-3.5" />,
+    },
+    {
+      id: "comparator",
+      label: "4-Model Eval Comparator",
+      badge: String(data.kpis.total_answers),
+      icon: <Cpu className="h-3.5 w-3.5" />,
+    },
+    {
+      id: "calibration",
+      label: "LLM Judge Calibration",
+      badge: `${data.kpis.calibration_judge_agree}/${data.kpis.calibration_total}`,
+      icon: <Scale className="h-3.5 w-3.5" />,
+    },
+  ];
+
+  const renderBadgeClass = (tab: NavTabDef, isActive: boolean) => {
+    if (tab.badgeAccent === "emerald") {
+      return isActive
+        ? "bg-emerald-500/25 text-emerald-200 border border-emerald-500/45"
+        : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30";
+    }
+    if (tab.badgeAccent === "violet") {
+      return isActive
+        ? "bg-violet-500/25 text-violet-100 border border-violet-400/45"
+        : "bg-violet-500/15 text-violet-200 border border-violet-400/30";
+    }
+    if (tab.badgeAccent === "sky") {
+      return isActive
+        ? "bg-sky-500/25 text-sky-100 border border-sky-400/45"
+        : "bg-sky-500/15 text-sky-300 border border-sky-500/30";
+    }
+    return isActive
+      ? "bg-sky-500/20 text-sky-200"
+      : "bg-navy-800 text-slate-400";
+  };
+
+  const handleSelectTab = (id: TabId) => {
+    if (id === "defects" && highlightedDefectId) {
+      setHighlightedDefectId(null);
+    }
+    setActiveTab(id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Sticky Header */}
-      <header className="sticky top-0 z-30 border-b border-navy-700/80 bg-navy-900/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-navy-700/80 bg-navy-900/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 py-4">
+          {/* Brand Row */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 py-3">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center text-navy-950 font-mono font-bold text-sm shadow-lg shadow-sky-500/20 shrink-0">
                 NC
@@ -126,17 +173,26 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                     NovaChat ES/CA
                   </h1>
                   <span className="text-xs font-mono px-2 py-0.5 rounded-md border border-sky-500/30 bg-sky-500/10 text-sky-300">
-                    LQA &amp; LLM Eval Dashboard
+                    LQA &amp; LLM Eval Suite
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Synthetic portfolio case study · 4 models across 6 runs · Live
-                  Python LQA checker + static eval replay
+                  4 models · 6 runs · Live Baseline/Grounded AI Sandbox + Live
+                  Python LQA Checker
                 </p>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              <a
+                href={data.meta.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-navy-700 bg-navy-800 hover:border-sky-500/40 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors"
+              >
+                <Linkedin className="h-3.5 w-3.5 text-sky-400" />
+                LinkedIn
+              </a>
               <a
                 href={data.meta.results_url}
                 target="_blank"
@@ -150,74 +206,111 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                 href={data.meta.repo_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/40 bg-sky-500/15 hover:bg-sky-500/25 px-3.5 py-1.5 text-xs font-semibold text-sky-200 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/40 bg-sky-500/15 hover:bg-sky-500/25 px-3 py-1.5 text-xs font-semibold text-sky-200 transition-colors"
               >
                 <Github className="h-3.5 w-3.5" />
-                View Source Repo
+                Source Repo
               </a>
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <nav
-            aria-label="Dashboard sections"
-            className="flex items-center gap-1 overflow-x-auto -mb-px pb-0.5"
-          >
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    if (tab.id === "defects" && highlightedDefectId) {
-                      setHighlightedDefectId(null);
-                    }
-                    setActiveTab(tab.id);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap px-3.5 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
-                    isActive
-                      ? tab.id === "story"
-                        ? "border-emerald-400 text-white"
-                        : "border-sky-400 text-white"
-                      : "border-transparent text-slate-400 hover:text-slate-200 hover:border-navy-600"
-                  }`}
-                >
-                  <span
-                    className={
+          {/* Two-Row Grouped Navigation */}
+          <div className="border-t border-navy-800 pt-2 pb-2 space-y-1.5">
+            {/* Row 1: Start & Live Interactive Tools */}
+            <nav
+              aria-label="Start and live interactive tools"
+              className="flex items-center gap-1.5 overflow-x-auto pb-0.5"
+            >
+              <span className="hidden lg:inline-block text-[10px] font-mono uppercase tracking-wider text-slate-500 pr-2 shrink-0 w-28">
+                Start &amp; Live
+              </span>
+              {primaryTabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const activeClasses =
+                  tab.id === "story"
+                    ? "border-emerald-500/50 bg-emerald-500/15 text-white"
+                    : tab.id === "sandbox"
+                    ? "border-violet-400/50 bg-violet-500/15 text-white"
+                    : "border-sky-400/50 bg-sky-500/15 text-white";
+
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleSelectTab(tab.id)}
+                    className={`inline-flex items-center gap-2 whitespace-nowrap px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium border transition-colors ${
                       isActive
-                        ? tab.id === "story"
-                          ? "text-emerald-400"
-                          : "text-sky-400"
-                        : "text-slate-500"
-                    }
+                        ? activeClasses
+                        : "border-navy-700/70 bg-navy-800/50 text-slate-300 hover:text-white hover:border-navy-600 hover:bg-navy-800"
+                    }`}
                   >
-                    {tab.icon}
-                  </span>
-                  {tab.label}
-                  {tab.badge && (
                     <span
-                      className={`font-mono text-[11px] px-1.5 py-0.5 rounded-md ${
-                        tab.badgeAccent === "emerald"
-                          ? isActive
-                            ? "bg-emerald-500/25 text-emerald-200 border border-emerald-500/40"
-                            : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                          : tab.badgeAccent === "sky"
-                          ? isActive
-                            ? "bg-sky-500/25 text-sky-100 border border-sky-400/45"
-                            : "bg-sky-500/15 text-sky-300 border border-sky-500/30"
-                          : isActive
-                          ? "bg-sky-500/20 text-sky-200"
-                          : "bg-navy-800 text-slate-400"
-                      }`}
+                      className={
+                        isActive
+                          ? tab.id === "story"
+                            ? "text-emerald-300"
+                            : tab.id === "sandbox"
+                            ? "text-violet-300"
+                            : "text-sky-300"
+                          : "text-slate-400"
+                      }
                     >
-                      {tab.badge}
+                      {tab.icon}
                     </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+                    {tab.label}
+                    {tab.badge && (
+                      <span
+                        className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md ${renderBadgeClass(
+                          tab,
+                          isActive
+                        )}`}
+                      >
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Row 2: Recorded Audit Evidence */}
+            <nav
+              aria-label="Recorded audit data"
+              className="flex items-center gap-1.5 overflow-x-auto"
+            >
+              <span className="hidden lg:inline-block text-[10px] font-mono uppercase tracking-wider text-slate-500 pr-2 shrink-0 w-28">
+                Audit Data
+              </span>
+              {auditTabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleSelectTab(tab.id)}
+                    className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
+                      isActive
+                        ? "border-sky-400/50 bg-sky-500/15 text-white"
+                        : "border-transparent bg-navy-900/60 text-slate-400 hover:text-slate-200 hover:bg-navy-800/80"
+                    }`}
+                  >
+                    <span className={isActive ? "text-sky-300" : "text-slate-500"}>
+                      {tab.icon}
+                    </span>
+                    {tab.label}
+                    {tab.badge && (
+                      <span
+                        className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${renderBadgeClass(
+                          tab,
+                          isActive
+                        )}`}
+                      >
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </div>
       </header>
 
@@ -226,10 +319,7 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
         {activeTab === "overview" && (
           <OverviewTab
             data={data}
-            onNavigateTab={(t) => {
-              setActiveTab(t);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
+            onNavigateTab={handleSelectTab}
             onJumpToRun={handleJumpToRun}
             onJumpToPreset={handleJumpToPreset}
           />
@@ -237,10 +327,26 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
 
         {activeTab === "story" && (
           <ProjectStoryTab
-            onNavigateTab={(t) => {
-              setActiveTab(t);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
+            linkedinUrl={data.meta.linkedin_url}
+            onNavigateTab={handleSelectTab}
+          />
+        )}
+
+        {activeTab === "sandbox" && (
+          <ChatbotTab
+            prompts={data.prompts}
+            extendedGlossary={data.lqa_checker.extended_glossary}
+            extendedRules={data.lqa_checker.extended_rules}
+          />
+        )}
+
+        {activeTab === "checker" && (
+          <LiveCheckerTab
+            glossary={data.lqa_checker.glossary}
+            extendedGlossary={data.lqa_checker.extended_glossary}
+            rules={data.lqa_checker.rules}
+            extendedRules={data.lqa_checker.extended_rules}
+            sampleStrings={data.lqa_checker.sample_strings}
           />
         )}
 
@@ -277,14 +383,6 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
             judgeModel={data.meta.judge_model}
           />
         )}
-
-        {activeTab === "checker" && (
-          <LiveCheckerTab
-            glossary={data.lqa_checker.glossary}
-            rules={data.lqa_checker.rules}
-            sampleStrings={data.lqa_checker.sample_strings}
-          />
-        )}
       </main>
 
       {/* Footer */}
@@ -301,15 +399,21 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <button
-              onClick={() => {
-                setActiveTab("checker");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/35 bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 text-[11px] text-sky-200 transition-colors"
+            <a
+              href={data.meta.linkedin_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-navy-700 bg-navy-900 hover:border-sky-500/40 px-2.5 py-1.5 text-[11px] text-slate-300 hover:text-sky-200 transition-colors"
             >
-              <Terminal className="h-3 w-3 text-sky-400" />
-              Live Python LQA Checker · Phase 3 next: Vercel AI SDK Chatbot
+              <Linkedin className="h-3 w-3 text-sky-400" />
+              linkedin.com/in/eduardtranslates
+            </a>
+            <button
+              onClick={() => handleSelectTab("sandbox")}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-violet-400/35 bg-violet-500/10 hover:bg-violet-500/20 px-2.5 py-1.5 text-[11px] text-violet-200 transition-colors"
+            >
+              <Bot className="h-3 w-3 text-violet-300" />
+              Try Live AI Sandbox
             </button>
           </div>
         </div>

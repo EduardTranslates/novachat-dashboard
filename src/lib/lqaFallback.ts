@@ -2,6 +2,7 @@ import type {
   GlossaryEntry,
   LqaCheckResponse,
   LqaIssue,
+  LqaProfile,
   LqaRules,
 } from "@/types/novachat";
 
@@ -19,10 +20,17 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Unicode-aware equivalent of Python 3's \b for Spanish/Catalan accented words
 function hasWord(text: string, term: string): boolean {
   const re = new RegExp(
     `(?<![\\p{L}\\p{N}_])${escapeRegex(term)}(?![\\p{L}\\p{N}_])`,
+    "iu"
+  );
+  return re.test(text);
+}
+
+function hasPattern(text: string, pattern: string): boolean {
+  const re = new RegExp(
+    `(?<![\\p{L}\\p{N}_])(?:${pattern})(?![\\p{L}\\p{N}_])`,
     "iu"
   );
   return re.test(text);
@@ -58,13 +66,13 @@ function formatPyList(items: string[]): string {
 export function runLocalLqaFallback(
   rows: CheckerInputRow[],
   glossary: GlossaryEntry[],
-  rules: LqaRules
+  rules: LqaRules,
+  profile: LqaProfile = "core"
 ): LqaCheckResponse {
   const t0 = performance.now();
   const issues: LqaIssue[] = [];
 
   for (const row of rows) {
-    // 1. Placeholders
     const srcPh = findPlaceholders(row.source);
     const tgtPh = findPlaceholders(row.target);
     if (
@@ -82,7 +90,6 @@ export function runLocalLqaFallback(
       );
     }
 
-    // 2. Length limit
     if (row.max_chars && row.max_chars.trim() !== "") {
       const limit = Number.parseInt(row.max_chars, 10);
       if (Number.isFinite(limit) && limit > 0 && row.target.length > limit) {
@@ -98,7 +105,6 @@ export function runLocalLqaFallback(
       }
     }
 
-    // 3. Gendered generics
     const gTerms = rules.gendered_terms[row.locale] ?? [];
     const foundGendered = gTerms.filter((t) => hasWord(row.target, t));
     if (foundGendered.length > 0) {
@@ -113,7 +119,6 @@ export function runLocalLqaFallback(
       );
     }
 
-    // 4. Untranslated
     const srcClean = row.source.trim();
     const tgtClean = row.target.trim();
     if (
@@ -132,7 +137,6 @@ export function runLocalLqaFallback(
       );
     }
 
-    // 5. Glossary
     for (const entry of glossary) {
       const approved =
         row.locale === "es-ES"
@@ -140,11 +144,13 @@ export function runLocalLqaFallback(
           : row.locale === "ca-ES"
           ? entry["ca-ES"]
           : "";
-      if (
-        approved &&
-        hasWord(row.source, entry.en) &&
-        !hasWord(row.target, approved)
-      ) {
+      if (!approved || !hasWord(row.source, entry.en)) continue;
+      const customPattern =
+        row.locale === "es-ES" ? entry.es_match : entry.ca_match;
+      const matched = customPattern
+        ? hasPattern(row.target, customPattern)
+        : hasWord(row.target, approved);
+      if (!matched) {
         issues.push(
           makeIssue(
             row,
@@ -157,7 +163,6 @@ export function runLocalLqaFallback(
       }
     }
 
-    // 6. Inverted punctuation (es-ES)
     if (row.locale === "es-ES") {
       if (row.target.includes("?") && !row.target.includes("¿")) {
         issues.push(
@@ -183,7 +188,6 @@ export function runLocalLqaFallback(
       }
     }
 
-    // 7. Catalan checks (ca-ES)
     if (row.locale === "ca-ES") {
       if (/l[.•-]l/i.test(row.target)) {
         issues.push(
@@ -226,7 +230,6 @@ export function runLocalLqaFallback(
       }
     }
 
-    // 8. Whitespace
     if (row.target.includes("  ")) {
       issues.push(
         makeIssue(
@@ -262,6 +265,8 @@ export function runLocalLqaFallback(
   return {
     ok: true,
     engine: "ts-local-fallback",
+    profile,
+    glossary_terms: glossary.length,
     python_version: "local-ts-mirror",
     elapsed_ms: Number((performance.now() - t0).toFixed(2)),
     strings_checked: rows.length,

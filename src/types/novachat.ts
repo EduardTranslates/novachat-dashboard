@@ -103,6 +103,9 @@ export interface GlossaryEntry {
   "es-ES": string;
   "ca-ES": string;
   note: string;
+  es_match?: string;
+  ca_match?: string;
+  domain?: string;
 }
 
 export interface LqaRules {
@@ -133,9 +136,13 @@ export interface LqaIssue {
   target: string;
 }
 
+export type LqaProfile = "core" | "extended";
+
 export interface LqaCheckResponse {
   ok: boolean;
   engine: "python-serverless" | "ts-local-fallback";
+  profile?: LqaProfile;
+  glossary_terms?: number;
   python_version: string;
   elapsed_ms: number;
   strings_checked: number;
@@ -156,7 +163,9 @@ export interface NovaChatData {
   meta: {
     project: string;
     author: string;
+    linkedin_url: string;
     repo_url: string;
+    dashboard_repo_url: string;
     results_url: string;
     recording_note: string;
     judge_model: string;
@@ -182,6 +191,10 @@ export interface NovaChatData {
     calibration_judge_agree: number;
     calibration_suite_agree: number;
   };
+  prompts: {
+    grounded: string;
+    baseline: string;
+  };
   cases: EvalCase[];
   runs_summary: RunSummary[];
   defects: DefectItem[];
@@ -189,7 +202,9 @@ export interface NovaChatData {
   calibration: CalibrationRow[];
   lqa_checker: {
     glossary: GlossaryEntry[];
+    extended_glossary: GlossaryEntry[];
     rules: LqaRules;
+    extended_rules: LqaRules;
     sample_strings: SampleStringRow[];
   };
 }
@@ -197,10 +212,11 @@ export interface NovaChatData {
 export type TabId =
   | "overview"
   | "story"
+  | "sandbox"
+  | "checker"
   | "defects"
   | "comparator"
-  | "calibration"
-  | "checker";
+  | "calibration";
 export type MatrixPreset =
   | "all"
   | "disagreements"

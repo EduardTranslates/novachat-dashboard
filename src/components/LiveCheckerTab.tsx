@@ -10,27 +10,32 @@ import {
   ChevronUp,
   Code2,
   Edit3,
+  Languages,
   Loader2,
   Play,
   RotateCcw,
   ShieldAlert,
   Sparkles,
   Terminal,
+  Wand2,
   XCircle,
 } from "lucide-react";
-import { LocaleBadge, SeverityBadge } from "./Badges";
+import { LocaleBadge, SeverityBadge, VerdictBadge } from "./Badges";
 import { runLocalLqaFallback } from "@/lib/lqaFallback";
 import type {
   GlossaryEntry,
   LqaCheckResponse,
   LqaIssue,
+  LqaProfile,
   LqaRules,
   SampleStringRow,
 } from "@/types/novachat";
 
 interface LiveCheckerTabProps {
   glossary: GlossaryEntry[];
+  extendedGlossary: GlossaryEntry[];
   rules: LqaRules;
+  extendedRules: LqaRules;
   sampleStrings: SampleStringRow[];
 }
 
@@ -42,7 +47,23 @@ interface PresetExample {
   max_chars: string;
   source: string;
   target: string;
+  profile?: LqaProfile;
   clean?: boolean;
+}
+
+interface AiAuditResult {
+  ok: boolean;
+  verdict: "PASS" | "WARN" | "FAIL";
+  summary: string;
+  issues: Array<{
+    category: string;
+    severity: string;
+    explanation: string;
+  }>;
+  suggested_fix: string;
+  model: string;
+  provider?: string;
+  elapsed_ms: number;
 }
 
 const CHECK_EXPLANATIONS: Record<string, string> = {
@@ -61,7 +82,7 @@ const CHECK_EXPLANATIONS: Record<string, string> = {
   punt_volat:
     "Catalan geminated 'l' requires the proper middle dot (l·l), not a period, bullet, or hyphen.",
   obsolete_diacritic:
-    "Uses a Catalan diacritic accent abolished by the 2016 IEC orthographic reform (e.g., 'vés' → 'ves').",
+    "Uses a Catalan diacritic accent abolished by the 2016 IEC orthographic reform (e.g., 'vés' → 'ves', 'adéu' → 'adeu').",
   castilianism:
     "Spanish lexical interference inside Catalan UI — one of the most frequent real-world ES→CA localization defects.",
   double_space:
@@ -72,7 +93,9 @@ const CHECK_EXPLANATIONS: Record<string, string> = {
 
 export function LiveCheckerTab({
   glossary,
+  extendedGlossary,
   rules,
+  extendedRules,
   sampleStrings,
 }: LiveCheckerTabProps) {
   const presets: PresetExample[] = useMemo(
@@ -105,13 +128,23 @@ export function LiveCheckerTab({
         target: "Per canviar l'idioma, vés a Configuració > Idioma.",
       },
       {
-        id: "UI-001",
-        label: "Gendered Greeting",
-        tag: "es-ES · Major",
+        id: "EXT-CA",
+        label: "Extended SaaS Terms (CA)",
+        tag: "ca-ES · Extended 56",
+        locale: "ca-ES",
+        max_chars: "90",
+        source: "Download the file and update your password.",
+        target: "Adéu! Pots descargar el archivo i actualizar la contraseña.",
+        profile: "extended",
+      },
+      {
+        id: "D-009-AI",
+        label: "Semantic Reversal (Layer 2)",
+        tag: "es-ES · AI Audit trap",
         locale: "es-ES",
-        max_chars: "30",
-        source: "Welcome back, {name}!",
-        target: "¡Bienvenido de nuevo, {name}!",
+        max_chars: "60",
+        source: "Your trial ends in {count} days.",
+        target: "Tu prueba terminó hace {count} días.",
       },
       {
         id: "UI-015",
@@ -133,15 +166,6 @@ export function LiveCheckerTab({
           "No se ha podido conectar con el servidor. Vuelve a intentarlo más tarde.",
       },
       {
-        id: "UI-016",
-        label: "Dropped %s Variable",
-        tag: "ca-ES · Major",
-        locale: "ca-ES",
-        max_chars: "40",
-        source: "Payment failed: %s",
-        target: "El pagament ha fallat",
-      },
-      {
         id: "UI-013",
         label: "Clean CA String",
         tag: "ca-ES · PASS",
@@ -156,9 +180,10 @@ export function LiveCheckerTab({
   );
 
   const [mode, setMode] = useState<"single" | "batch">("single");
+  const [profile, setProfile] = useState<LqaProfile>("extended");
   const [activePresetId, setActivePresetId] = useState<string>("UI-012");
 
-  // Single string form state (initialized to the iconic UI-012 Configuració/Configuración bug!)
+  // Single string form state
   const [stringId, setStringId] = useState<string>("UI-012");
   const [locale, setLocale] = useState<"es-ES" | "ca-ES">("ca-ES");
   const [maxChars, setMaxChars] = useState<string>("20");
@@ -170,6 +195,12 @@ export function LiveCheckerTab({
     null
   );
 
+  // Layer 2 AI Semantic Audit & Translation state
+  const [aiAuditLoading, setAiAuditLoading] = useState(false);
+  const [aiAuditResult, setAiAuditResult] = useState<AiAuditResult | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [translateLoading, setTranslateLoading] = useState(false);
+
   // Batch state
   const [batchLoading, setBatchLoading] = useState(false);
   const [batchResult, setBatchResult] = useState<LqaCheckResponse | null>(null);
@@ -179,12 +210,18 @@ export function LiveCheckerTab({
 
   // Reference drawer
   const [showRulesDrawer, setShowRulesDrawer] = useState(false);
+  const [glossarySearch, setGlossarySearch] = useState("");
+
+  const activeGlossary =
+    profile === "extended" ? extendedGlossary : glossary;
+  const activeRules = profile === "extended" ? extendedRules : rules;
 
   const callLqaEndpoint = useCallback(
     async (
       payload:
         | {
             mode: "single";
+            profile: LqaProfile;
             row: {
               id: string;
               locale: string;
@@ -193,7 +230,7 @@ export function LiveCheckerTab({
               max_chars: string;
             };
           }
-        | { mode: "batch" }
+        | { mode: "batch"; profile: LqaProfile }
     ): Promise<LqaCheckResponse> => {
       try {
         const res = await fetch("/api/lqa_check", {
@@ -210,13 +247,15 @@ export function LiveCheckerTab({
         }
         return json;
       } catch {
-        // Seamless fallback when running plain `npm run dev` locally without Vercel Python runtime
         const rows =
           payload.mode === "batch" ? sampleStrings : [payload.row];
-        return runLocalLqaFallback(rows, glossary, rules);
+        const g =
+          payload.profile === "extended" ? extendedGlossary : glossary;
+        const r = payload.profile === "extended" ? extendedRules : rules;
+        return runLocalLqaFallback(rows, g, r, payload.profile);
       }
     },
-    [glossary, rules, sampleStrings]
+    [glossary, extendedGlossary, rules, extendedRules, sampleStrings]
   );
 
   const runSingleCheck = useCallback(
@@ -226,30 +265,115 @@ export function LiveCheckerTab({
       source: string;
       target: string;
       max_chars: string;
+      profile?: LqaProfile;
     }) => {
-      const rowToRun = override ?? {
-        id: stringId || "CUSTOM",
-        locale,
-        source,
-        target,
-        max_chars: maxChars,
-      };
+      const chosenProfile = override?.profile ?? profile;
+      const rowToRun = override
+        ? {
+            id: override.id,
+            locale: override.locale,
+            source: override.source,
+            target: override.target,
+            max_chars: override.max_chars,
+          }
+        : {
+            id: stringId || "CUSTOM",
+            locale,
+            source,
+            target,
+            max_chars: maxChars,
+          };
       setSingleLoading(true);
-      const data = await callLqaEndpoint({ mode: "single", row: rowToRun });
+      const data = await callLqaEndpoint({
+        mode: "single",
+        profile: chosenProfile,
+        row: rowToRun,
+      });
       setSingleResult(data);
       setSingleLoading(false);
     },
-    [callLqaEndpoint, stringId, locale, source, target, maxChars]
+    [callLqaEndpoint, profile, stringId, locale, source, target, maxChars]
   );
 
   const runBatchAudit = useCallback(async () => {
     setBatchLoading(true);
-    const data = await callLqaEndpoint({ mode: "batch" });
+    // Batch always runs with "core" profile to guarantee exact 14/14 parity with qa_report.csv
+    const data = await callLqaEndpoint({ mode: "batch", profile: "core" });
     setBatchResult(data);
     setBatchLoading(false);
   }, [callLqaEndpoint]);
 
-  // Run initial check on mount so the visitor immediately sees live Python results
+  const runAiTranslate = useCallback(async () => {
+    if (!source.trim() || translateLoading) return;
+    setTranslateLoading(true);
+    setAiError(null);
+    setAiAuditResult(null);
+    try {
+      const res = await fetch("/api/lqa-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "translate",
+          locale,
+          source,
+        }),
+      });
+      const json = (await res.json()) as {
+        ok: boolean;
+        translation?: string;
+        error?: string;
+      };
+      if (!json.ok || !json.translation) {
+        setAiError(json.error ?? "Could not translate string.");
+      } else {
+        setTarget(json.translation);
+        setActivePresetId("");
+        await runSingleCheck({
+          id: stringId || "AI-TR",
+          locale,
+          source,
+          target: json.translation,
+          max_chars: maxChars,
+          profile,
+        });
+      }
+    } catch {
+      setAiError("Network error reaching /api/lqa-ai.");
+    } finally {
+      setTranslateLoading(false);
+    }
+  }, [source, locale, translateLoading, runSingleCheck, stringId, maxChars, profile]);
+
+  const runAiSemanticAudit = useCallback(async () => {
+    if (!target.trim() || aiAuditLoading) return;
+    setAiAuditLoading(true);
+    setAiError(null);
+    setAiAuditResult(null);
+    try {
+      const res = await fetch("/api/lqa-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "audit",
+          locale,
+          source,
+          target,
+        }),
+      });
+      const json = (await res.json()) as AiAuditResult & { error?: string };
+      if (!json.ok) {
+        setAiError(json.error ?? "Could not complete AI semantic audit.");
+      } else {
+        setAiAuditResult(json);
+      }
+    } catch {
+      setAiError("Network error reaching /api/lqa-ai.");
+    } finally {
+      setAiAuditLoading(false);
+    }
+  }, [source, target, locale, aiAuditLoading]);
+
+  // Run initial check on mount
   useEffect(() => {
     void runSingleCheck({
       id: "UI-012",
@@ -257,11 +381,11 @@ export function LiveCheckerTab({
       source: "Settings",
       target: "Configuración",
       max_chars: "20",
+      profile: "extended",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-run batch audit the first time the user opens Batch mode
   useEffect(() => {
     if (mode === "batch" && !batchResult && !batchLoading) {
       void runBatchAudit();
@@ -269,18 +393,23 @@ export function LiveCheckerTab({
   }, [mode, batchResult, batchLoading, runBatchAudit]);
 
   const loadPreset = (p: PresetExample) => {
+    const nextProfile = p.profile ?? profile;
+    if (p.profile) setProfile(p.profile);
     setActivePresetId(p.id);
     setStringId(p.id);
     setLocale(p.locale);
     setMaxChars(p.max_chars);
     setSource(p.source);
     setTarget(p.target);
+    setAiAuditResult(null);
+    setAiError(null);
     void runSingleCheck({
       id: p.id,
       locale: p.locale,
       source: p.source,
       target: p.target,
       max_chars: p.max_chars,
+      profile: nextProfile,
     });
   };
 
@@ -292,6 +421,8 @@ export function LiveCheckerTab({
     setMaxChars(row.max_chars);
     setSource(row.source);
     setTarget(row.target);
+    setAiAuditResult(null);
+    setAiError(null);
     setMode("single");
     void runSingleCheck({
       id: row.id,
@@ -299,6 +430,7 @@ export function LiveCheckerTab({
       source: row.source,
       target: row.target,
       max_chars: row.max_chars,
+      profile,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -328,6 +460,19 @@ export function LiveCheckerTab({
     });
   }, [sampleStrings, issuesByRowId, batchFilter]);
 
+  const filteredGlossary = useMemo(() => {
+    const q = glossarySearch.trim().toLowerCase();
+    if (!q) return activeGlossary;
+    return activeGlossary.filter(
+      (g) =>
+        g.en.toLowerCase().includes(q) ||
+        g["es-ES"].toLowerCase().includes(q) ||
+        g["ca-ES"].toLowerCase().includes(q) ||
+        (g.domain ?? "").toLowerCase().includes(q) ||
+        (g.note ?? "").toLowerCase().includes(q)
+    );
+  }, [activeGlossary, glossarySearch]);
+
   const renderEnginePill = (res: LqaCheckResponse | null) => {
     if (!res) return null;
     const isPy = res.engine === "python-serverless";
@@ -345,8 +490,10 @@ export function LiveCheckerTab({
           }`}
         />
         {isPy
-          ? `Python ${res.python_version} · Vercel Serverless (lqa_checks.py) · ${res.elapsed_ms} ms`
-          : `Local TS mirror (deploy on Vercel for Python Serverless) · ${res.elapsed_ms} ms`}
+          ? `Python ${res.python_version} · ${
+              res.profile === "extended" ? "Extended (56 terms)" : "Core (6 terms)"
+            } · ${res.elapsed_ms} ms`
+          : `Local TS mirror · ${res.elapsed_ms} ms`}
       </span>
     );
   };
@@ -358,20 +505,20 @@ export function LiveCheckerTab({
         <div className="space-y-1.5 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/35 bg-sky-500/10 px-3 py-0.5 text-xs font-mono text-sky-300">
             <Terminal className="h-3.5 w-3.5" />
-            Phase 2 · Live Python Serverless Tool (Zero External Dependencies)
+            Phase 2 · Live Python Serverless Checker + Optional AI Layer 2
           </div>
           <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-white">
             Live ES/CA LQA Regression Checker
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Test any English-to-Spanish or English-to-Catalan UI string live
-            against{" "}
+            Test any EN→ES or EN→CA string live against{" "}
             <code className="px-1.5 py-0.5 rounded bg-navy-950 border border-navy-700 text-sky-200 text-xs">
               lqa_checks.py
             </code>{" "}
-            — running directly in Python on Vercel with 8 deterministic rules
-            covering placeholders, length, inclusive greetings, glossary,
-            Castilianisms, and Catalan IEC 2016 orthography.
+            (Layer 1: 8 deterministic Python rules with either the 6-term Core
+            or 56-term Extended SaaS &amp; Support glossary), then optionally
+            run an AI Semantic &amp; Grammar Audit (Layer 2) for calques and
+            meaning reversals.
           </p>
         </div>
 
@@ -404,14 +551,62 @@ export function LiveCheckerTab({
         <div className="space-y-5">
           {/* 1-Click Presets */}
           <div className="rounded-2xl border border-navy-700 bg-navy-800/90 p-4 md:p-5 space-y-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-300">
                 <Sparkles className="h-3.5 w-3.5 text-sky-400" />
                 Try a Real Defect in 1 Click (or type your own below)
               </span>
-              <span className="text-[11px] text-slate-400 hidden sm:inline">
-                Fix the target text and re-run to turn a FAIL into PASS
-              </span>
+
+              {/* Glossary Profile Switch */}
+              <div className="inline-flex items-center gap-2">
+                <span className="text-[11px] font-mono text-slate-400">
+                  Rule Profile:
+                </span>
+                <div className="inline-flex rounded-lg border border-navy-700 bg-navy-900 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfile("core");
+                      void runSingleCheck({
+                        id: stringId || "CUSTOM",
+                        locale,
+                        source,
+                        target,
+                        max_chars: maxChars,
+                        profile: "core",
+                      });
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors ${
+                      profile === "core"
+                        ? "bg-sky-500/20 text-sky-200 border border-sky-500/35"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    NovaChat Core (6)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfile("extended");
+                      void runSingleCheck({
+                        id: stringId || "CUSTOM",
+                        locale,
+                        source,
+                        target,
+                        max_chars: maxChars,
+                        profile: "extended",
+                      });
+                    }}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-colors ${
+                      profile === "extended"
+                        ? "bg-indigo-500/25 text-indigo-200 border border-indigo-400/40"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    Extended SaaS ({extendedGlossary.length})
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -521,12 +716,27 @@ export function LiveCheckerTab({
 
                 {/* Source (EN) */}
                 <div className="space-y-1.5">
-                  <label
-                    htmlFor="lqa-source"
-                    className="block text-[11px] font-mono uppercase tracking-wider text-slate-400"
-                  >
-                    Source String (EN)
-                  </label>
+                  <div className="flex items-center justify-between gap-2">
+                    <label
+                      htmlFor="lqa-source"
+                      className="block text-[11px] font-mono uppercase tracking-wider text-slate-400"
+                    >
+                      Source String (EN)
+                    </label>
+                    <button
+                      type="button"
+                      disabled={translateLoading || !source.trim()}
+                      onClick={() => void runAiTranslate()}
+                      className="inline-flex items-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 hover:bg-violet-500/20 disabled:opacity-45 px-2.5 py-1 text-[11px] font-medium text-violet-200 transition-colors"
+                    >
+                      {translateLoading ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Languages className="h-3 w-3" />
+                      )}
+                      Auto-Translate EN → {locale}
+                    </button>
+                  </div>
                   <textarea
                     id="lqa-source"
                     rows={2}
@@ -535,7 +745,7 @@ export function LiveCheckerTab({
                       setSource(e.target.value);
                       setActivePresetId("");
                     }}
-                    placeholder="e.g. You have {count} new messages"
+                    placeholder="e.g. Download the file and update your password."
                     className="w-full rounded-xl border border-navy-700 bg-navy-900 px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 font-mono"
                   />
                 </div>
@@ -574,7 +784,7 @@ export function LiveCheckerTab({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-navy-700/70">
+              <div className="pt-3 flex flex-wrap items-center justify-between gap-2 border-t border-navy-700/70">
                 <button
                   type="button"
                   onClick={() => {
@@ -584,6 +794,8 @@ export function LiveCheckerTab({
                     setTarget("");
                     setMaxChars("");
                     setSingleResult(null);
+                    setAiAuditResult(null);
+                    setAiError(null);
                   }}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-navy-600 bg-navy-900 hover:bg-navy-750 px-3 py-2 text-xs font-medium text-slate-300 transition-colors"
                 >
@@ -591,18 +803,34 @@ export function LiveCheckerTab({
                   Clear
                 </button>
 
-                <button
-                  type="submit"
-                  disabled={singleLoading || (!source && !target)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-navy-950 font-semibold px-4 py-2 text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all"
-                >
-                  {singleLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Play className="h-4 w-4 fill-current" />
-                  )}
-                  Run Python LQA Check
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={aiAuditLoading || !target.trim()}
+                    onClick={() => void runAiSemanticAudit()}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-violet-400/45 bg-violet-500/15 hover:bg-violet-500/25 disabled:opacity-50 px-3.5 py-2 text-xs font-semibold text-violet-100 transition-colors"
+                  >
+                    {aiAuditLoading ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Wand2 className="h-3.5 w-3.5" />
+                    )}
+                    AI Semantic Audit (Layer 2)
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={singleLoading || (!source && !target)}
+                    className="inline-flex items-center gap-2 rounded-xl bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-navy-950 font-semibold px-4 py-2 text-xs sm:text-sm shadow-lg shadow-sky-500/20 transition-all"
+                  >
+                    {singleLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Play className="h-4 w-4 fill-current" />
+                    )}
+                    Run Python LQA
+                  </button>
+                </div>
               </div>
             </form>
 
@@ -611,7 +839,7 @@ export function LiveCheckerTab({
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
-                    Diagnostic Output
+                    Layer 1 · Python Deterministic Output
                   </span>
                   {renderEnginePill(singleResult)}
                 </div>
@@ -619,19 +847,22 @@ export function LiveCheckerTab({
                 {!singleResult ? (
                   <div className="rounded-xl border border-dashed border-navy-600 bg-navy-900/50 p-8 text-center text-xs text-slate-400">
                     Enter a source and target string (or select a preset above)
-                    and click <strong className="text-slate-200">Run Python LQA Check</strong>.
+                    and click <strong className="text-slate-200">Run Python LQA</strong>.
                   </div>
                 ) : singleResult.issue_count === 0 ? (
-                  <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/[0.08] p-5 space-y-2">
+                  <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/[0.08] p-4 space-y-2">
                     <div className="flex items-center gap-2 text-emerald-300 font-semibold text-sm">
                       <CheckCircle2 className="h-5 w-5 shrink-0" />
                       PASS · 0 mechanical issues detected
                     </div>
                     <p className="text-xs text-emerald-100/80 leading-relaxed">
-                      All 8 deterministic rules passed for{" "}
-                      <span className="font-mono">{locale}</span>. Remember: a
-                      mechanical pass means form is clean—meaning, tone, and
-                      naturalness still belong to human linguistic review.
+                      All 8 deterministic Python rules passed for{" "}
+                      <span className="font-mono">{locale}</span>. Click{" "}
+                      <strong className="text-violet-200">
+                        AI Semantic Audit (Layer 2)
+                      </strong>{" "}
+                      to test whether meaning reversals, calques, or grammar
+                      slips are hiding behind a clean mechanical pass!
                     </p>
                   </div>
                 ) : (
@@ -687,6 +918,69 @@ export function LiveCheckerTab({
                     </div>
                   </div>
                 )}
+
+                {/* Layer 2 AI Semantic Audit Output */}
+                {aiError && (
+                  <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 p-3.5 text-xs text-amber-200 leading-relaxed flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                    <span>{aiError}</span>
+                  </div>
+                )}
+
+                {aiAuditResult && (
+                  <div className="rounded-2xl border border-violet-400/40 bg-violet-500/[0.08] p-4 space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-200">
+                        <Wand2 className="h-3.5 w-3.5 text-violet-300" />
+                        Layer 2 · AI Semantic &amp; Grammar Audit
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <VerdictBadge verdict={aiAuditResult.verdict} />
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {aiAuditResult.model} · {aiAuditResult.elapsed_ms}ms
+                        </span>
+                      </div>
+                    </div>
+
+                    {aiAuditResult.summary && (
+                      <p className="text-xs text-slate-200 leading-relaxed">
+                        {aiAuditResult.summary}
+                      </p>
+                    )}
+
+                    {aiAuditResult.issues.length > 0 && (
+                      <div className="space-y-2">
+                        {aiAuditResult.issues.map((item, idx) => (
+                          <div
+                            key={idx}
+                            className="rounded-xl border border-navy-700 bg-navy-950/75 p-3 text-xs space-y-1"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-violet-200">
+                                {item.category}
+                              </span>
+                              <SeverityBadge severity={item.severity} />
+                            </div>
+                            <p className="text-slate-300 leading-relaxed">
+                              {item.explanation}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {aiAuditResult.suggested_fix && (
+                      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] p-3 text-xs space-y-1">
+                        <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">
+                          Suggested Natural Fix ({locale})
+                        </div>
+                        <p className="font-mono text-emerald-100">
+                          {aiAuditResult.suggested_fix}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Deliberate Automation Boundary */}
@@ -694,14 +988,14 @@ export function LiveCheckerTab({
                 <ShieldAlert className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-amber-200">
-                    What this script deliberately does NOT catch:
+                    Why two layers exist:
                   </strong>{" "}
-                  Form is automatable; meaning is not. Semantic reversals (
-                  <em>&ldquo;ends in&rdquo;</em> translated as past{" "}
-                  <em>&ldquo;terminó hace&rdquo;</em>, D-009), tone/register
-                  drift (<em>usted/vostè</em>), and open-ended Catalan grammar (
-                  <code>se&apos;te cobrarà</code>, <code>escrivim</code>) still
-                  require a human linguist.
+                  Try preset <strong className="text-white">D-009</strong> (
+                  <em>&ldquo;ends in&rdquo;</em> reversed to past{" "}
+                  <em>&ldquo;terminó hace&rdquo;</em>): Layer 1 Python passes
+                  because the placeholder <code>{"{count}"}</code> is intact,
+                  while Layer 2 AI (and a human linguist) immediately flags the
+                  meaning reversal.
                 </div>
               </div>
             </div>
@@ -710,7 +1004,6 @@ export function LiveCheckerTab({
       ) : (
         /* MODE 2: BATCH SAMPLE AUDIT (sample_strings.csv — 20 STRINGS) */
         <div className="space-y-5">
-          {/* Batch Summary Bar */}
           <div className="rounded-2xl border border-navy-700 bg-navy-800/90 p-5 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
@@ -719,12 +1012,12 @@ export function LiveCheckerTab({
                   <code className="text-sky-300 font-mono text-sm">
                     sample_strings.csv
                   </code>{" "}
-                  (20 Synthetic UI Strings)
+                  (20 Synthetic UI Strings · Core Profile)
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  12 strings with seeded defects + 8 clean control strings (0
-                  false positives). Click any row to edit and fix it live in the
-                  sandbox.
+                  Reproduces exact parity with <code>qa_report.csv</code>: 12
+                  strings with seeded defects (14 issues) + 8 clean control
+                  strings (0 false positives).
                 </p>
               </div>
 
@@ -792,7 +1085,6 @@ export function LiveCheckerTab({
                   </div>
                 </div>
 
-                {/* Filter Strip */}
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-navy-700/70">
                   <div className="flex flex-wrap items-center gap-1.5">
                     {(
@@ -836,7 +1128,6 @@ export function LiveCheckerTab({
             )}
           </div>
 
-          {/* 20-String Results List */}
           {batchLoading && !batchResult ? (
             <div className="rounded-2xl border border-navy-700 bg-navy-800/70 p-10 text-center text-sm text-slate-300 flex items-center justify-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin text-sky-400" />
@@ -942,7 +1233,7 @@ export function LiveCheckerTab({
         </div>
       )}
 
-      {/* Collapsible Reference Drawer: Glossary + Rules + Word-Boundary Note */}
+      {/* Collapsible Reference Drawer: Active Glossary + Rules */}
       <section className="rounded-2xl border border-navy-700 bg-navy-800/80 overflow-hidden">
         <button
           onClick={() => setShowRulesDrawer((v) => !v)}
@@ -952,12 +1243,14 @@ export function LiveCheckerTab({
             <BookMarked className="h-4 w-4 text-sky-400" />
             <div>
               <div className="text-sm font-semibold text-white">
-                Inspect Active Bilingual Glossary ({glossary.length} terms) &amp;
-                Rule Lists (rules.json)
+                Inspect Active Bilingual Glossary ({activeGlossary.length}{" "}
+                terms) &amp; Rule Lists (
+                {profile === "extended" ? "Extended SaaS" : "NovaChat Core"})
               </div>
               <div className="text-xs text-slate-400">
-                The exact configuration consumed by lqa_checks.py (shared with
-                the Promptfoo eval suite)
+                {activeRules.castilianisms_ca.length} Catalan Castilianisms ·{" "}
+                {activeRules.obsolete_diacritics_ca.length} IEC 2016 obsolete
+                diacritics · inflection-tolerant matching in Extended mode
               </div>
             </div>
           </div>
@@ -969,15 +1262,25 @@ export function LiveCheckerTab({
         </button>
 
         {showRulesDrawer && (
-          <div className="px-5 pb-5 pt-2 border-t border-navy-700/70 space-y-5">
-            {/* Glossary Table */}
-            <div>
-              <h4 className="text-xs font-mono uppercase tracking-wider text-sky-300 mb-2.5">
-                glossary.csv — Approved EN → ES/CA UI Terms
-              </h4>
-              <div className="overflow-x-auto rounded-xl border border-navy-700">
+          <div className="px-5 pb-5 pt-3 border-t border-navy-700/70 space-y-5">
+            {/* Glossary Table + Quick Filter */}
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-sky-300">
+                  Approved EN → ES/CA UI &amp; Support Terms (
+                  {filteredGlossary.length}/{activeGlossary.length})
+                </h4>
+                <input
+                  type="text"
+                  value={glossarySearch}
+                  onChange={(e) => setGlossarySearch(e.target.value)}
+                  placeholder="Filter terms (e.g. Refund, Fitxer, Billing)..."
+                  className="rounded-lg border border-navy-700 bg-navy-900 px-3 py-1 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 w-64"
+                />
+              </div>
+              <div className="overflow-x-auto max-h-72 overflow-y-auto rounded-xl border border-navy-700">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-navy-900 text-slate-400 font-mono">
+                  <thead className="bg-navy-900 text-slate-400 font-mono sticky top-0">
                     <tr>
                       <th className="px-3.5 py-2.5">EN Source</th>
                       <th className="px-3.5 py-2.5">es-ES</th>
@@ -986,7 +1289,7 @@ export function LiveCheckerTab({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-navy-700/70 bg-navy-900/40">
-                    {glossary.map((g) => (
+                    {filteredGlossary.map((g) => (
                       <tr key={g.en}>
                         <td className="px-3.5 py-2 font-mono text-white">
                           {g.en}
@@ -1011,10 +1314,10 @@ export function LiveCheckerTab({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
               <div className="rounded-xl border border-navy-700 bg-navy-900/60 p-3.5 space-y-2">
                 <div className="font-mono text-indigo-300 font-semibold">
-                  castilianisms_ca ({rules.castilianisms_ca.length})
+                  castilianisms_ca ({activeRules.castilianisms_ca.length})
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {rules.castilianisms_ca.map((w) => (
+                <div className="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
+                  {activeRules.castilianisms_ca.map((w) => (
                     <span
                       key={w}
                       className="px-1.5 py-0.5 rounded bg-navy-950 border border-navy-700 font-mono text-[11px] text-slate-300"
@@ -1027,10 +1330,11 @@ export function LiveCheckerTab({
 
               <div className="rounded-xl border border-navy-700 bg-navy-900/60 p-3.5 space-y-2">
                 <div className="font-mono text-amber-300 font-semibold">
-                  obsolete_diacritics_ca ({rules.obsolete_diacritics_ca.length})
+                  obsolete_diacritics_ca (
+                  {activeRules.obsolete_diacritics_ca.length})
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {rules.obsolete_diacritics_ca.map((w) => (
+                  {activeRules.obsolete_diacritics_ca.map((w) => (
                     <span
                       key={w}
                       className="px-1.5 py-0.5 rounded bg-navy-950 border border-navy-700 font-mono text-[11px] text-slate-300"
@@ -1040,10 +1344,10 @@ export function LiveCheckerTab({
                   ))}
                 </div>
                 <div className="font-mono text-emerald-300 font-semibold pt-2">
-                  allow_identical ({rules.allow_identical.length})
+                  allow_identical ({activeRules.allow_identical.length})
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {rules.allow_identical.map((w) => (
+                  {activeRules.allow_identical.map((w) => (
                     <span
                       key={w}
                       className="px-1.5 py-0.5 rounded bg-navy-950 border border-navy-700 font-mono text-[11px] text-slate-300"
@@ -1059,7 +1363,7 @@ export function LiveCheckerTab({
                   gendered_terms (es-ES / ca-ES)
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {(rules.gendered_terms["es-ES"] ?? []).map((w) => (
+                  {(activeRules.gendered_terms["es-ES"] ?? []).map((w) => (
                     <span
                       key={`es-${w}`}
                       className="px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/25 font-mono text-[11px] text-cyan-200"
@@ -1067,7 +1371,7 @@ export function LiveCheckerTab({
                       {w}
                     </span>
                   ))}
-                  {(rules.gendered_terms["ca-ES"] ?? []).map((w) => (
+                  {(activeRules.gendered_terms["ca-ES"] ?? []).map((w) => (
                     <span
                       key={`ca-${w}`}
                       className="px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-400/25 font-mono text-[11px] text-indigo-200"
@@ -1079,7 +1383,7 @@ export function LiveCheckerTab({
               </div>
             </div>
 
-            {/* Word-boundary bug callout from lqa-checker/README.md */}
+            {/* Word-boundary bug callout */}
             <div className="rounded-xl border border-sky-500/25 bg-sky-500/[0.06] p-3.5 flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed">
               <Code2 className="h-4 w-4 text-sky-400 shrink-0 mt-0.5" />
               <div>
@@ -1094,8 +1398,8 @@ export function LiveCheckerTab({
                 Catalan word{" "}
                 <code className="text-emerald-200">Configuració</code>.
                 Switching to a word-boundary regex (
-                <code className="text-sky-200">{"\\bConfiguració\\b"}</code>) fixed
-                the false negative—try preset{" "}
+                <code className="text-sky-200">{"\bConfiguració\b"}</code>)
+                fixed the false negative—try preset{" "}
                 <button
                   type="button"
                   onClick={() => {

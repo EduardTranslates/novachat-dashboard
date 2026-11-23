@@ -6,7 +6,9 @@ import {
   BookOpen,
   Clock,
   Compass,
+  ExternalLink,
   Lightbulb,
+  Linkedin,
   Sparkles,
   User,
   Wrench,
@@ -14,10 +16,14 @@ import {
 import type { TabId } from "@/types/novachat";
 
 interface ProjectStoryTabProps {
+  linkedinUrl: string;
   onNavigateTab: (tab: TabId) => void;
 }
 
-export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
+export function ProjectStoryTab({
+  linkedinUrl,
+  onNavigateTab,
+}: ProjectStoryTabProps) {
   const skills = [
     "Bilingual LQA (ES/CA)",
     "MQM Framework",
@@ -52,7 +58,7 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
         </div>
       </section>
 
-      {/* Section 1: The Goal */}
+      {/* Section 1: When It Began */}
       <section className="rounded-2xl border border-navy-700 bg-navy-800/90 p-6 md:p-7 space-y-4">
         <div className="flex items-start gap-3">
           <div className="h-9 w-9 rounded-xl border border-sky-500/30 bg-sky-500/10 flex items-center justify-center text-sky-300 shrink-0 mt-0.5">
@@ -60,10 +66,10 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
           </div>
           <div>
             <div className="text-[11px] font-mono uppercase tracking-wider text-sky-400">
-              01 · Why NovaChat exists
+              01 · Where the idea came from
             </div>
             <h3 className="text-lg md:text-xl font-semibold text-white">
-              The Goal
+              When It Began
             </h3>
           </div>
         </div>
@@ -92,9 +98,10 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
               language
             </del>{" "}
             nerd with a DIY mindset would do: I wrestled with Python, invented a
-            fictional SaaS company (<strong className="text-white">NovaChat</strong>
-            ), built a real testing lab from scratch, and watched four real AI
-            models play the weirdest Parcheesi game ever.
+            fictional SaaS company (
+            <strong className="text-white">NovaChat</strong>), built a real
+            testing lab from scratch, and watched four real AI models play the
+            weirdest Parcheesi game ever.
           </p>
         </div>
       </section>
@@ -219,7 +226,8 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
 
           <li className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.06] p-4">
             <strong className="text-indigo-200">
-              Language, however, is a much trickier beast.
+              &ldquo;Large Language Model&rdquo; doesn&apos;t necessarily mean
+              &ldquo;Accurate Language Model.&rdquo;
             </strong>{" "}
             Even with the right facts, Spanish kept sneaking into Catalan
             answers: mixing Spanish menu names into Catalan sentences, using
@@ -318,20 +326,35 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
             </p>
           </div>
 
-          <div className="rounded-xl border border-navy-700/80 bg-navy-900/60 p-4 space-y-1.5">
-            <div className="text-xs font-mono uppercase tracking-wider text-sky-300 font-semibold">
-              Who built this
+          <div className="rounded-xl border border-navy-700/80 bg-navy-900/60 p-4 flex flex-col justify-between gap-3">
+            <div className="space-y-1.5">
+              <div className="text-xs font-mono uppercase tracking-wider text-sky-300 font-semibold">
+                Who built this
+              </div>
+              <p className="text-xs md:text-sm text-slate-300">
+                I&apos;m <strong className="text-white">Eduard Aliod</strong>,
+                born and raised in Reus (Catalonia). A passionate musician and
+                full-time restless language geek who realized two months ago
+                that he wasn&apos;t geeky enough and that scrolling through
+                Netflix wasn&apos;t as fun as scrolling through syntax errors. I
+                bridge classic localization (subtitling, UI, musical adaptation)
+                with transcreation and AI evaluation (LQA, auditing,
+                red-teaming, multimodal).
+              </p>
             </div>
-            <p className="text-xs md:text-sm text-slate-300">
-              I&apos;m <strong className="text-white">Eduard Aliod</strong>,
-              born and raised in Reus (Catalonia). A passionate musician and
-              full-time restless language geek who realized two months ago that
-              he wasn&apos;t geeky enough and that scrolling through Netflix
-              wasn&apos;t as fun as scrolling through syntax errors. I bridge
-              classic localization (subtitling, UI, musical adaptation) with
-              transcreation and AI evaluation (LQA, auditing, red-teaming,
-              multimodal).
-            </p>
+
+            <div>
+              <a
+                href={linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-sky-500/45 bg-sky-500/15 hover:bg-sky-500/25 px-3.5 py-2 text-xs font-semibold text-sky-200 transition-colors"
+              >
+                <Linkedin className="h-3.5 w-3.5 text-sky-300" />
+                Connect on LinkedIn
+                <ExternalLink className="h-3 w-3 opacity-75" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -356,19 +379,31 @@ export function ProjectStoryTab({ onNavigateTab }: ProjectStoryTabProps) {
         {/* Final CTA */}
         <div className="pt-3 border-t border-navy-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <p className="text-xs text-slate-400">
-            Want to inspect the 28 MQM defects, 72 recorded replies, and 20/20
-            judge calibration?
+            Want to test the live AI chatbot, run Python LQA checks, or inspect
+            the 28 MQM defects and 72 recorded replies?
           </p>
-          <button
-            onClick={() => {
-              onNavigateTab("overview");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-sky-500/45 bg-sky-500/20 hover:bg-sky-500/30 px-4 py-2.5 text-xs sm:text-sm font-semibold text-sky-100 transition-colors shrink-0"
-          >
-            Ready for the numbers? Explore the Executive Overview
-            <ArrowRight className="h-4 w-4" />
-          </button>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              onClick={() => {
+                onNavigateTab("sandbox");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-violet-400/45 bg-violet-500/20 hover:bg-violet-500/30 px-3.5 py-2.5 text-xs font-semibold text-violet-100 transition-colors"
+            >
+              Try the Live Chatbot
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                onNavigateTab("overview");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-sky-500/45 bg-sky-500/20 hover:bg-sky-500/30 px-4 py-2.5 text-xs sm:text-sm font-semibold text-sky-100 transition-colors"
+            >
+              Explore Executive Overview
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </section>
     </div>

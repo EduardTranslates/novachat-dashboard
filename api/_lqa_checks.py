@@ -2,8 +2,8 @@
 _lqa_checks.py - Automated LQA regression checks for ES/CA UI strings.
 
 Direct serverless module mirror of novachat-es-ca-lqa/lqa-checker/lqa_checks.py
-(Standard library only, zero external dependencies).
-Prefixed with '_' so Vercel treats it as an internal module rather than a route.
+with optional extended SaaS/Support glossary profile support.
+Standard library only, zero external dependencies.
 """
 
 import re
@@ -109,14 +109,21 @@ def check_untranslated(row: dict, cfg: dict) -> list[dict]:
 def check_glossary(row: dict, cfg: dict) -> list[dict]:
     """If the source contains a glossary term, the approved target must appear."""
     issues = []
+    locale = row["locale"]
+    match_key = "es_match" if locale == "es-ES" else "ca_match"
     for entry in cfg["glossary"]:
-        approved = entry.get(row["locale"], "")
-        if (
-            approved
-            and re.search(rf"\b{re.escape(entry['en'])}\b", row["source"], re.IGNORECASE)
-            # word boundary: "Configuració" must not match inside "Configuración"
-            and not re.search(rf"\b{re.escape(approved)}\b", row["target"], re.IGNORECASE)
-        ):
+        approved = entry.get(locale, "")
+        if not approved:
+            continue
+        if not re.search(rf"\b{re.escape(entry['en'])}\b", row["source"], re.IGNORECASE):
+            continue
+        pattern = entry.get(match_key)
+        if pattern:
+            matched = bool(re.search(rf"\b(?:{pattern})\b", row["target"], re.IGNORECASE))
+        else:
+            # Word boundary: "Configuració" must not match inside "Configuración"
+            matched = bool(re.search(rf"\b{re.escape(approved)}\b", row["target"], re.IGNORECASE))
+        if not matched:
             issues.append(
                 issue(
                     row,
@@ -164,7 +171,6 @@ def check_catalan(row: dict, cfg: dict) -> list[dict]:
         return []
     tgt = row["target"]
     issues = []
-    # l.l or l•l or l-l instead of the correct middle dot (l·l)
     if re.search(r"l[.•\-]l", tgt, re.IGNORECASE):
         issues.append(
             issue(

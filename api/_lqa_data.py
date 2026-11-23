@@ -116,6 +116,656 @@ GLOSSARY = [
   }
 ]
 
+EXTENDED_RULES = {
+  "gendered_terms": {
+    "es-ES": [
+      "bienvenido",
+      "bienvenidos",
+      "estimado",
+      "registrado",
+      "conectado"
+    ],
+    "ca-ES": [
+      "benvingut",
+      "benvinguts",
+      "estimat",
+      "registrat",
+      "connectat"
+    ]
+  },
+  "castilianisms_ca": [
+    "configuración",
+    "cancelar",
+    "vale",
+    "bueno",
+    "luego",
+    "aplicación",
+    "recurso",
+    "ajustes",
+    "suscripción",
+    "ayuda",
+    "facturación",
+    "disfruta",
+    "disfrutar",
+    "reembolsar",
+    "reembolsa",
+    "reembolsen",
+    "reembolsem",
+    "reembolsat",
+    "reembolsada",
+    "reembolsament",
+    "reembolso",
+    "descargar",
+    "descarga",
+    "borrar",
+    "búsqueda",
+    "enlace",
+    "enlaces",
+    "archivo",
+    "archivos",
+    "contraseña",
+    "contraseñas",
+    "correo",
+    "actualizar",
+    "actualización",
+    "aceptar",
+    "rechazar",
+    "reintentar",
+    "soporte",
+    "cuenta",
+    "notificación",
+    "notificaciones",
+    "mensaje",
+    "mensajes",
+    "ventana",
+    "pestaña",
+    "botón",
+    "botones",
+    "fallo",
+    "fallos",
+    "inválido",
+    "inválida",
+    "herramienta",
+    "herramientas",
+    "descuento",
+    "descuentos",
+    "prueba",
+    "pago",
+    "pagos",
+    "tarjeta",
+    "añadir",
+    "quitar",
+    "cambiar",
+    "cambio",
+    "cambios",
+    "volver",
+    "siguiente",
+    "atrás",
+    "empezar",
+    "terminar",
+    "tamaño",
+    "subir",
+    "bajar"
+  ],
+  "obsolete_diacritics_ca": [
+    "vés",
+    "dóna",
+    "dónes",
+    "véns",
+    "vénen",
+    "sóc",
+    "móra",
+    "fóra",
+    "adéu",
+    "nét",
+    "néta",
+    "néts",
+    "nétes",
+    "bóta",
+    "bótes",
+    "mólt",
+    "mólta",
+    "mólts",
+    "móltes",
+    "rés",
+    "cós",
+    "féu"
+  ],
+  "catalan_ui_terms_in_es": [
+    "configuració",
+    "subscripció",
+    "ajuda",
+    "facturació"
+  ],
+  "allow_identical": [
+    "OK",
+    "Wi-Fi",
+    "PDF",
+    "NovaChat"
+  ],
+  "gendered_address_terms": {
+    "es-ES": [
+      "bienvenido",
+      "bienvenidos",
+      "estimado",
+      "estimados"
+    ],
+    "ca-ES": [
+      "benvingut",
+      "benvinguts",
+      "estimat",
+      "estimats"
+    ]
+  }
+}
+
+EXTENDED_GLOSSARY = [
+  {
+    "en": "Settings",
+    "es-ES": "Ajustes",
+    "ca-ES": "Configuració",
+    "es_match": "ajustes",
+    "ca_match": "configuraci[oó]",
+    "domain": "Core UI",
+    "note": "Approved menu name; never 'Configuración' in ES or CA"
+  },
+  {
+    "en": "Subscription",
+    "es-ES": "Suscripción",
+    "ca-ES": "Subscripció",
+    "es_match": "suscripci[oó]n(?:es)?",
+    "ca_match": "subscripci[oó](?:ns)?",
+    "domain": "Core UI",
+    "note": "Billing & plan management"
+  },
+  {
+    "en": "Upgrade",
+    "es-ES": "Mejorar plan",
+    "ca-ES": "Millora el pla",
+    "es_match": "mejorar(?:\\s+(?:el\\s+|tu\\s+)?plan)?|mejora(?:\\s+(?:el\\s+|tu\\s+)?plan)?",
+    "ca_match": "millor(?:a|ar)(?:\\s+(?:el\\s+|el\\s+teu\\s+)?pla)?",
+    "domain": "Core UI",
+    "note": "Do not leave untranslated"
+  },
+  {
+    "en": "Save",
+    "es-ES": "Guardar",
+    "ca-ES": "Desa",
+    "es_match": "guarda(?:r|dos?|das?)?",
+    "ca_match": "des(?:a|ar|at|ats|ada|ades)",
+    "domain": "Core UI",
+    "note": "CA standard software verb is 'desar'"
+  },
+  {
+    "en": "Upload",
+    "es-ES": "Subir",
+    "ca-ES": "Penja",
+    "es_match": "sub(?:ir|e|ido|ida|idos|idas)",
+    "ca_match": "penj(?:a|ar|at|ada|ats|ades)",
+    "domain": "Core UI",
+    "note": "CA prefers 'penjar' over 'carregar/pujar'"
+  },
+  {
+    "en": "Workspace",
+    "es-ES": "Espacio de trabajo",
+    "ca-ES": "Espai de treball",
+    "es_match": "espacios?\\s+de\\s+trabajo",
+    "ca_match": "espais?\\s+de\\s+treball",
+    "domain": "Core UI",
+    "note": "Onboarding & collaboration"
+  },
+  {
+    "en": "Support team",
+    "es-ES": "Equipo de soporte",
+    "ca-ES": "Servei d'assistència",
+    "es_match": "equipo\\s+de\\s+soporte|soporte",
+    "ca_match": "servei\\s+d['’]assist[eè]ncia",
+    "domain": "Support",
+    "note": "NovaChat support escalation term"
+  },
+  {
+    "en": "Business days",
+    "es-ES": "Días hábiles",
+    "ca-ES": "Dies feiners",
+    "es_match": "d[ií]as?\\s+h[aá]biles?",
+    "ca_match": "dies\\s+feiners|dia\\s+feiner",
+    "domain": "Billing",
+    "note": "Refund SLA phrasing"
+  },
+  {
+    "en": "Account",
+    "es-ES": "Cuenta",
+    "ca-ES": "Compte",
+    "es_match": "cuentas?",
+    "ca_match": "comptes?",
+    "domain": "Auth",
+    "note": "Never 'cuenta' in CA"
+  },
+  {
+    "en": "Sign in",
+    "es-ES": "Iniciar sesión",
+    "ca-ES": "Inicia la sessió",
+    "es_match": "inicia(?:r)?\\s+sesi[oó]n",
+    "ca_match": "inicia(?:r)?\\s+(?:la\\s+)?sessi[oó]",
+    "domain": "Auth",
+    "note": "Standard authentication CTA"
+  },
+  {
+    "en": "Log in",
+    "es-ES": "Iniciar sesión",
+    "ca-ES": "Inicia la sessió",
+    "es_match": "inicia(?:r)?\\s+sesi[oó]n",
+    "ca_match": "inicia(?:r)?\\s+(?:la\\s+)?sessi[oó]",
+    "domain": "Auth",
+    "note": "Standard authentication CTA"
+  },
+  {
+    "en": "Log out",
+    "es-ES": "Cerrar sesión",
+    "ca-ES": "Tanca la sessió",
+    "es_match": "c(?:errar|ierra)\\s+sesi[oó]n",
+    "ca_match": "tanc(?:a|ar)\\s+(?:la\\s+)?sessi[oó]",
+    "domain": "Auth",
+    "note": "Standard session exit CTA"
+  },
+  {
+    "en": "Sign out",
+    "es-ES": "Cerrar sesión",
+    "ca-ES": "Tanca la sessió",
+    "es_match": "c(?:errar|ierra)\\s+sesi[oó]n",
+    "ca_match": "tanc(?:a|ar)\\s+(?:la\\s+)?sessi[oó]",
+    "domain": "Auth",
+    "note": "Standard session exit CTA"
+  },
+  {
+    "en": "Sign up",
+    "es-ES": "Registrarse",
+    "ca-ES": "Registra't",
+    "es_match": "registr(?:arse|ate|arte|a)",
+    "ca_match": "registr(?:a['’]t|ar-te|ar-se)",
+    "domain": "Auth",
+    "note": "Account creation CTA"
+  },
+  {
+    "en": "Password",
+    "es-ES": "Contraseña",
+    "ca-ES": "Contrasenya",
+    "es_match": "contrase[ñn]as?",
+    "ca_match": "contraseny(?:a|es)",
+    "domain": "Auth",
+    "note": "Avoid 'clave' / Spanish 'contraseña' in CA"
+  },
+  {
+    "en": "Username",
+    "es-ES": "Nombre de usuario",
+    "ca-ES": "Nom d'usuari",
+    "es_match": "nombre\\s+de\\s+usuario",
+    "ca_match": "nom\\s+d['’]usuari",
+    "domain": "Auth",
+    "note": "Profile & login field"
+  },
+  {
+    "en": "Profile",
+    "es-ES": "Perfil",
+    "ca-ES": "Perfil",
+    "es_match": "perfiles?",
+    "ca_match": "perfils?",
+    "domain": "Navigation",
+    "note": "Matches UI map"
+  },
+  {
+    "en": "Language",
+    "es-ES": "Idioma",
+    "ca-ES": "Idioma",
+    "es_match": "idiomas?",
+    "ca_match": "idiom(?:a|es)",
+    "domain": "Navigation",
+    "note": "Matches UI map"
+  },
+  {
+    "en": "Help",
+    "es-ES": "Ayuda",
+    "ca-ES": "Ajuda",
+    "es_match": "ayuda",
+    "ca_match": "ajuda",
+    "domain": "Navigation",
+    "note": "Matches UI map"
+  },
+  {
+    "en": "Dashboard",
+    "es-ES": "Panel",
+    "ca-ES": "Tauler",
+    "es_match": "paneles?",
+    "ca_match": "taulers?",
+    "domain": "Navigation",
+    "note": "Avoid leaving 'Dashboard' untranslated"
+  },
+  {
+    "en": "Tab",
+    "es-ES": "Pestaña",
+    "ca-ES": "Pestanya",
+    "es_match": "pesta[ñn]as?",
+    "ca_match": "pestany(?:a|es)",
+    "domain": "Navigation",
+    "note": "UI navigation"
+  },
+  {
+    "en": "Window",
+    "es-ES": "Ventana",
+    "ca-ES": "Finestra",
+    "es_match": "ventanas?",
+    "ca_match": "finestr(?:a|es)",
+    "domain": "Navigation",
+    "note": "Avoid Spanish 'ventana' in CA"
+  },
+  {
+    "en": "Search",
+    "es-ES": "Buscar",
+    "ca-ES": "Cerca",
+    "es_match": "busc(?:ar|a)|b[uú]squeda",
+    "ca_match": "cerc(?:a|ar|s|ues)",
+    "domain": "UI Action",
+    "note": "CA software convention favors 'cerca/cercar'"
+  },
+  {
+    "en": "Download",
+    "es-ES": "Descargar",
+    "ca-ES": "Descarrega",
+    "es_match": "descarg(?:ar|a|ado|ada)",
+    "ca_match": "descarreg(?:a|ar|at|ada)|desc[aà]rreg(?:a|ues)",
+    "domain": "UI Action",
+    "note": "Never 'descargar' in CA"
+  },
+  {
+    "en": "Delete",
+    "es-ES": "Eliminar",
+    "ca-ES": "Suprimeix",
+    "es_match": "elimin(?:ar|a|ado|ada)",
+    "ca_match": "suprim(?:eix|ir|it|ida)|esborr(?:a|ar|at|ada)",
+    "domain": "UI Action",
+    "note": "Avoid 'borrar' in ES/CA UI"
+  },
+  {
+    "en": "Cancel",
+    "es-ES": "Cancelar",
+    "ca-ES": "Cancel·la",
+    "es_match": "cancel(?:ar|a|ado|ada)",
+    "ca_match": "cancel·l(?:a|ar|at|ada|es)",
+    "domain": "UI Action",
+    "note": "Requires Catalan punt volat (l·l)"
+  },
+  {
+    "en": "Edit",
+    "es-ES": "Editar",
+    "ca-ES": "Edita",
+    "es_match": "edit(?:ar|a|ado|ada)",
+    "ca_match": "edit(?:a|ar|at|ada)",
+    "domain": "UI Action",
+    "note": "Standard action verb"
+  },
+  {
+    "en": "Share",
+    "es-ES": "Compartir",
+    "ca-ES": "Comparteix",
+    "es_match": "compart(?:ir|e|ido|ida)",
+    "ca_match": "compart(?:eix|ir|it|ida)",
+    "domain": "UI Action",
+    "note": "Collaboration CTA"
+  },
+  {
+    "en": "Update",
+    "es-ES": "Actualizar",
+    "ca-ES": "Actualitza",
+    "es_match": "actualiz(?:ar|a|ado|ada|aci[oó]n)",
+    "ca_match": "actualitz(?:a|ar|at|ada|aci[oó])",
+    "domain": "UI Action",
+    "note": "CA uses -tz-"
+  },
+  {
+    "en": "Retry",
+    "es-ES": "Reintentar",
+    "ca-ES": "Torna-ho a provar",
+    "es_match": "reintent(?:ar|a)|vuelve\\s+a\\s+intentar",
+    "ca_match": "torn(?:a|ar)(?:-ho)?\\s+a\\s+provar",
+    "domain": "UI Action",
+    "note": "Avoid Castilianism 'reintentar' in CA"
+  },
+  {
+    "en": "Billing",
+    "es-ES": "Facturación",
+    "ca-ES": "Facturació",
+    "es_match": "facturaci[oó]n",
+    "ca_match": "facturaci[oó]",
+    "domain": "Billing",
+    "note": "Billing terminology"
+  },
+  {
+    "en": "Refund",
+    "es-ES": "Reembolso",
+    "ca-ES": "Reemborsament",
+    "es_match": "reembols(?:o|os|ar|a|an|amos)|devoluci[oó]n(?:es)?",
+    "ca_match": "reembors(?:ament|aments|ar|a|en|em)|devoluci[oó](?:ns)?",
+    "domain": "Billing",
+    "note": "CA root is reembors-, never reembols-"
+  },
+  {
+    "en": "Invoice",
+    "es-ES": "Factura",
+    "ca-ES": "Factura",
+    "es_match": "facturas?",
+    "ca_match": "factur(?:a|es)",
+    "domain": "Billing",
+    "note": "Billing document"
+  },
+  {
+    "en": "Payment",
+    "es-ES": "Pago",
+    "ca-ES": "Pagament",
+    "es_match": "pagos?",
+    "ca_match": "pagaments?",
+    "domain": "Billing",
+    "note": "Avoid Spanish 'pago' in CA"
+  },
+  {
+    "en": "Discount",
+    "es-ES": "Descuento",
+    "ca-ES": "Descompte",
+    "es_match": "descuentos?",
+    "ca_match": "descomptes?",
+    "domain": "Billing",
+    "note": "Pricing & promotions"
+  },
+  {
+    "en": "Trial",
+    "es-ES": "Prueba",
+    "ca-ES": "Prova",
+    "es_match": "pruebas?",
+    "ca_match": "prov(?:a|es)",
+    "domain": "Billing",
+    "note": "Free trial period"
+  },
+  {
+    "en": "Plan",
+    "es-ES": "Plan",
+    "ca-ES": "Pla",
+    "es_match": "plan(?:es)?",
+    "ca_match": "plans?",
+    "domain": "Billing",
+    "note": "Subscription tier"
+  },
+  {
+    "en": "File",
+    "es-ES": "Archivo",
+    "ca-ES": "Fitxer",
+    "es_match": "archivos?",
+    "ca_match": "fitxers?",
+    "domain": "Content",
+    "note": "Softcatalà convention: 'fitxer'"
+  },
+  {
+    "en": "Folder",
+    "es-ES": "Carpeta",
+    "ca-ES": "Carpeta",
+    "es_match": "carpetas?",
+    "ca_match": "carpet(?:a|es)",
+    "domain": "Content",
+    "note": "File organization"
+  },
+  {
+    "en": "Link",
+    "es-ES": "Enlace",
+    "ca-ES": "Enllaç",
+    "es_match": "enlaces?",
+    "ca_match": "enlla[çc](?:os)?",
+    "domain": "Content",
+    "note": "Never 'enlace' in CA"
+  },
+  {
+    "en": "Draft",
+    "es-ES": "Borrador",
+    "ca-ES": "Esborrany",
+    "es_match": "borrador(?:es)?",
+    "ca_match": "esborranys?",
+    "domain": "Content",
+    "note": "Unsent message or doc"
+  },
+  {
+    "en": "Template",
+    "es-ES": "Plantilla",
+    "ca-ES": "Plantilla",
+    "es_match": "plantillas?",
+    "ca_match": "plantill(?:a|es)",
+    "domain": "Content",
+    "note": "Reusable layout"
+  },
+  {
+    "en": "Message",
+    "es-ES": "Mensaje",
+    "ca-ES": "Missatge",
+    "es_match": "mensajes?",
+    "ca_match": "missatges?",
+    "domain": "Messaging",
+    "note": "Core NovaChat noun"
+  },
+  {
+    "en": "Notification",
+    "es-ES": "Notificación",
+    "ca-ES": "Notificació",
+    "es_match": "notificaci[oó]n(?:es)?",
+    "ca_match": "notificaci[oó](?:ns)?",
+    "domain": "Messaging",
+    "note": "Alert system"
+  },
+  {
+    "en": "Inbox",
+    "es-ES": "Bandeja de entrada",
+    "ca-ES": "Safata d'entrada",
+    "es_match": "bandeja\\s+de\\s+entrada",
+    "ca_match": "safata\\s+d['’]entrada",
+    "domain": "Messaging",
+    "note": "Mail & chat inbox"
+  },
+  {
+    "en": "Email",
+    "es-ES": "Correo electrónico",
+    "ca-ES": "Correu electrònic",
+    "es_match": "correo(?:\\s+electr[oó]nico)?",
+    "ca_match": "correu(?:\\s+electr[oò]nic)?",
+    "domain": "Messaging",
+    "note": "Avoid raw 'email' in formal UI"
+  },
+  {
+    "en": "Chat",
+    "es-ES": "Chat",
+    "ca-ES": "Xat",
+    "es_match": "chats?",
+    "ca_match": "xats?",
+    "domain": "Messaging",
+    "note": "CA spelling uses 'xat'"
+  },
+  {
+    "en": "Feedback",
+    "es-ES": "Comentarios",
+    "ca-ES": "Comentaris",
+    "es_match": "comentarios?|opini[oó]n",
+    "ca_match": "comentaris?|opini[oó]",
+    "domain": "Support",
+    "note": "Avoid untranslated anglicism"
+  },
+  {
+    "en": "Ticket",
+    "es-ES": "Solicitud",
+    "ca-ES": "Sol·licitud",
+    "es_match": "solicitud(?:es)?|consulta(?:s)?",
+    "ca_match": "sol·licituds?|consult(?:a|es)",
+    "domain": "Support",
+    "note": "CA requires punt volat in sol·licitud"
+  },
+  {
+    "en": "Contact",
+    "es-ES": "Contacto",
+    "ca-ES": "Contacte",
+    "es_match": "contact(?:o|os|ar|a)",
+    "ca_match": "contact(?:e|es|ar|a)",
+    "domain": "Support",
+    "note": "Support contact"
+  },
+  {
+    "en": "Team",
+    "es-ES": "Equipo",
+    "ca-ES": "Equip",
+    "es_match": "equipos?",
+    "ca_match": "equips?",
+    "domain": "Collaboration",
+    "note": "Workspace members"
+  },
+  {
+    "en": "Privacy",
+    "es-ES": "Privacidad",
+    "ca-ES": "Privadesa",
+    "es_match": "privacidad",
+    "ca_match": "privadesa",
+    "domain": "Trust",
+    "note": "CA uses 'privadesa', not 'privacitat'"
+  },
+  {
+    "en": "Security",
+    "es-ES": "Seguridad",
+    "ca-ES": "Seguretat",
+    "es_match": "seguridad",
+    "ca_match": "seguretat",
+    "domain": "Trust",
+    "note": "Account security"
+  },
+  {
+    "en": "Terms of service",
+    "es-ES": "Condiciones del servicio",
+    "ca-ES": "Condicions del servei",
+    "es_match": "condiciones\\s+del\\s+servicio",
+    "ca_match": "condicions\\s+del\\s+servei",
+    "domain": "Trust",
+    "note": "Legal footer link"
+  },
+  {
+    "en": "Default",
+    "es-ES": "Predeterminado",
+    "ca-ES": "Predeterminat",
+    "es_match": "predeterminad(?:o|a|os|as)|por\\s+defecto",
+    "ca_match": "predetermina(?:t|da|ts|des)|per\\s+defecte",
+    "domain": "Settings",
+    "note": "System configuration"
+  },
+  {
+    "en": "Confirmation",
+    "es-ES": "Confirmación",
+    "ca-ES": "Confirmació",
+    "es_match": "confirmaci[oó]n",
+    "ca_match": "confirmaci[oó]",
+    "domain": "Status",
+    "note": "Action confirmation"
+  }
+]
+
 SAMPLE_STRINGS = [
   {
     "id": "UI-001",

@@ -484,6 +484,15 @@ export function OverviewTab({
                         <ArrowRight className="h-3 w-3" />
                       </button>
                     )}
+                    {layer.key === "Promptfoo evals" && (
+                      <button
+                        onClick={() => onNavigateTab("sandbox")}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-300 hover:text-violet-200 transition-colors"
+                      >
+                        Test Baseline vs. Grounded chatbot live
+                        <ArrowRight className="h-3 w-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
