@@ -1,12 +1,12 @@
 # NovaChat ES/CA — Interactive LQA, Python Checker & Live AI Sandbox
 
 [![CI — Data Integrity & Next.js Build](https://github.com/EduardTranslates/novachat-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/EduardTranslates/novachat-dashboard/actions/workflows/ci.yml)
-[![Live Demo on Vercel](https://img.shields.io/badge/Live%20Demo-Vercel-0ea5e9?style=flat&logo=vercel)](https://novachat-dashboard-eight.vercel.app/)
+[![Live Demo on Vercel](https://img.shields.io/badge/Live%20Demo-Vercel-0ea5e9?style=flat&logo=vercel)](https://novachat-es-ca-lqa.vercel.app/)
 [![Source Case Study](https://img.shields.io/badge/Case%20Study-novachat--es--ca--lqa-6366f1?style=flat&logo=github)](https://github.com/EduardTranslates/novachat-es-ca-lqa)
 
 Interactive web application and live ES/CA localization QA lab built on top of the **[novachat-es-ca-lqa](https://github.com/EduardTranslates/novachat-es-ca-lqa)** synthetic case study.
 
-> **Live app:** [https://novachat-dashboard-eight.vercel.app/](https://novachat-dashboard-eight.vercel.app/)
+> **Live app:** [https://novachat-dashboard-eight.vercel.app/](https://novachat-es-ca-lqa.vercel.app/)
 
 <!-- Optional: drop 2 screenshots into public/screenshots/ and uncomment below
 ![NovaChat Dashboard Overview](public/screenshots/overview.png)
