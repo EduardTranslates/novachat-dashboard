@@ -9,6 +9,7 @@ import {
   Code2,
   Eye,
   Filter,
+  HelpCircle,
   MessageSquareQuote,
   Scale,
 } from "lucide-react";
@@ -131,7 +132,7 @@ export function ComparatorTab({
     },
     {
       id: "queries",
-      label: "PO Queries (QUERY)",
+      label: "Product Owner Queries (QUERY)",
       count: evaluations.filter((e) => e.human_verdict === "QUERY").length,
     },
     {
@@ -149,21 +150,27 @@ export function ComparatorTab({
     return m;
   }, [cases]);
 
+  const hasQueryInActiveCase = caseEvaluations.some(
+    (e) => e.human_verdict === "QUERY"
+  );
+
   return (
     <div className="space-y-5">
       {/* Sub-mode Toggle Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-navy-700 bg-navy-800/90 px-5 py-3.5">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 rounded-2xl border border-navy-700 bg-navy-800/90 px-5 py-4">
+        <div className="space-y-0.5">
           <h2 className="text-sm font-semibold text-white">
-            4-Model Recorded Evaluation Explorer (72 Answers)
+            4-Model Recorded Evaluation Explorer · 6 Runs (72 Answers)
           </h2>
-          <p className="text-xs text-slate-400">
-            Compare all 6 model runs on a single prompt, or filter the full
-            72-answer audit log.
+          <p className="text-xs text-slate-400 leading-relaxed">
+            4 distinct LLMs across 6 runs: Gemini 3.5 Flash-Lite (1 ungrounded
+            baseline + 2 grounded runs to test consistency), plus 1 grounded run
+            each for Gemini 3.8 Flash, NVIDIA Nemotron 3 Ultra, and Baidu ERNIE
+            5.5 Flash.
           </p>
         </div>
 
-        <div className="inline-flex rounded-xl border border-navy-700 bg-navy-900 p-1 self-start">
+        <div className="inline-flex rounded-xl border border-navy-700 bg-navy-900 p-1 self-start shrink-0">
           <button
             onClick={() => onModeChange("case")}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
@@ -337,6 +344,25 @@ export function ComparatorTab({
               </div>
             </div>
 
+            {/* Contextual QUERY Explainer Banner (shown on EC-001 & EC-002) */}
+            {hasQueryInActiveCase && (
+              <div className="rounded-xl border border-violet-500/35 bg-violet-500/[0.08] p-3.5 flex items-start gap-2.5 text-xs text-slate-200 leading-relaxed">
+                <HelpCircle className="h-4 w-4 text-violet-300 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-violet-200 font-mono">
+                    What does QUERY mean?
+                  </strong>{" "}
+                  Not a clear failure, but an unverified policy extrapolation:
+                  the model gave the right menu path and then extended
+                  NovaChat&apos;s <em>cancellation</em> rules to a{" "}
+                  <em>plan downgrade</em> (which the source policy does not
+                  cover). In a real QA workflow, this is escalated to the{" "}
+                  <strong className="text-white">Product Owner (PO)</strong> for
+                  policy confirmation.
+                </div>
+              </div>
+            )}
+
             {/* 6 Model Run Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {caseEvaluations.map((ev) => {
@@ -474,6 +500,21 @@ export function ComparatorTab({
               ))}
             </div>
 
+            {matrixPreset === "queries" && (
+              <div className="rounded-xl border border-violet-500/35 bg-violet-500/[0.08] p-3 flex items-start gap-2.5 text-xs text-slate-200 leading-relaxed">
+                <HelpCircle className="h-4 w-4 text-violet-300 shrink-0 mt-0.5" />
+                <span>
+                  <strong className="text-violet-200 font-mono">QUERY</strong> =
+                  Accurate answer, not a clear failure, but the model
+                  extrapolated a policy rule beyond the source documentation
+                  (applying cancellation rules to plan downgrades). In
+                  production localization QA, these are escalated to the{" "}
+                  <strong className="text-white">Product Owner (PO)</strong>{" "}
+                  rather than arbitrarily marked PASS or FAIL.
+                </span>
+              </div>
+            )}
+
             {/* Secondary Dropdown Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-navy-700/70">
               <div className="flex flex-wrap items-center gap-2">
@@ -482,7 +523,7 @@ export function ComparatorTab({
                   onChange={(e) => onSelectedRunFilterChange(e.target.value)}
                   className="rounded-xl border border-navy-700 bg-navy-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500"
                 >
-                  <option value="ALL">All 6 Runs</option>
+                  <option value="ALL">All 6 Runs (4 Models)</option>
                   {runsSummary.map((r) => (
                     <option key={r.run} value={r.run}>
                       {r.short_label}

@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
+  BookOpen,
   CheckCircle2,
   Cpu,
   FileSearch,
+  Info,
   Layers,
   Scale,
   ShieldAlert,
@@ -71,11 +73,23 @@ export function OverviewTab({
           <div className="max-w-3xl space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-medium text-sky-300">
               <Sparkles className="h-3.5 w-3.5" />
-              Core Empirical Finding · ES/CA Localization & LLM Evaluation
+              Core Empirical Finding · ES/CA Localization &amp; LLM Evaluation
             </div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-              Grounding fixes facts. It doesn&apos;t fix language.
-            </h2>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                Grounding fixes facts. It doesn&apos;t fix language.
+              </h2>
+              <button
+                onClick={() => onNavigateTab("story")}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-semibold px-3.5 py-2 text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.99] shrink-0"
+              >
+                <BookOpen className="h-4 w-4" />
+                30-Second Read
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
             <p className="text-sm md:text-base text-slate-300 leading-relaxed">
               Injecting an authoritative UI map, bilingual glossary, and refund
               policy into the system prompt eliminated{" "}
@@ -90,7 +104,7 @@ export function OverviewTab({
           </div>
 
           <div className="flex flex-row lg:flex-col gap-3 shrink-0">
-            <div className="rounded-xl border border-navy-700 bg-navy-900/80 px-4 py-3 text-center min-w-[148px]">
+            <div className="rounded-xl border border-navy-700 bg-navy-900/80 px-4 py-3 text-center min-w-[156px]">
               <div className="text-[11px] uppercase tracking-wider text-slate-400">
                 Critical Hallucinations
               </div>
@@ -170,7 +184,7 @@ export function OverviewTab({
             {kpis.total_cases} ES/CA cases × {kpis.total_runs} runs
           </div>
           <div className="mt-1 text-xs text-slate-400">
-            4 LLMs · 100% bilingual human audit
+            4 distinct models · 100% human audit
           </div>
         </button>
 
@@ -194,7 +208,7 @@ export function OverviewTab({
             {kpis.disagreements_count} Catalan grammar blind spots
           </div>
           <div className="mt-1 text-xs text-violet-300">
-            + {kpis.query_count} PO policy escalations (QUERY)
+            + {kpis.query_count} Product Owner queries (QUERY)
           </div>
         </button>
 
@@ -233,17 +247,19 @@ export function OverviewTab({
         {/* Chart 1: 6-Run Model Performance */}
         <div className="xl:col-span-7 rounded-2xl border border-navy-700 bg-navy-800/90 p-6 flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-5">
               <div>
                 <h3 className="text-base font-semibold text-white">
-                  Model Performance Across 6 Runs (n = 12 cases/run)
+                  Model Performance: 4 Models Across 6 Runs (n = 12 cases/run)
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Click any run to inspect its 12 recorded responses in the
-                  Audit Matrix.
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  Gemini 3.5 Flash-Lite was run 3 times (1 ungrounded baseline +
+                  2 grounded runs to check consistency), alongside 1 grounded
+                  run each for Gemini 3.8 Flash, Nemotron 3 Ultra, and ERNIE 5.5
+                  Flash. Click any run to inspect its 12 replies.
                 </p>
               </div>
-              <div className="inline-flex rounded-lg border border-navy-700 bg-navy-900 p-0.5 self-start">
+              <div className="inline-flex rounded-lg border border-navy-700 bg-navy-900 p-0.5 self-start shrink-0">
                 <button
                   onClick={() => setChartMode("human")}
                   className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
@@ -338,7 +354,7 @@ export function OverviewTab({
                         <div
                           style={{ width: `${queryPct}%` }}
                           className="bg-violet-500/80 transition-all duration-300"
-                          title={`QUERY (PO escalation): ${queryCount}`}
+                          title={`QUERY (policy extrapolation escalated to Product Owner): ${queryCount}`}
                         />
                       )}
                       {failPct > 0 && (
@@ -365,7 +381,7 @@ export function OverviewTab({
                           </span>
                         ) : (
                           <span className="text-emerald-300/90">
-                            Zero defects in human review
+                            Passed all 12 cases (0 defects in this set)
                           </span>
                         )}
                       </span>
@@ -376,19 +392,39 @@ export function OverviewTab({
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-navy-700/70 flex flex-wrap items-center gap-4 text-xs text-slate-400">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/80" /> PASS
-            </span>
-            {chartMode === "human" && (
+          <div className="mt-4 pt-3.5 border-t border-navy-700/70 space-y-2.5">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-sm bg-violet-500/80" />{" "}
-                QUERY (policy extrapolation escalated to PO)
+                <span className="h-2.5 w-2.5 rounded-sm bg-emerald-500/80" />{" "}
+                PASS
               </span>
-            )}
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-rose-500/80" /> FAIL
-            </span>
+              {chartMode === "human" && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-violet-500/80" />{" "}
+                  <strong className="text-violet-200 font-mono font-medium">
+                    QUERY
+                  </strong>
+                  : accurate, but extrapolated a policy rule beyond the source
+                  text — escalated to Product Owner (PO)
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-sm bg-rose-500/80" /> FAIL
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-navy-700/80 bg-navy-900/70 p-3 flex items-start gap-2 text-[11px] text-slate-400 leading-relaxed">
+              <Info className="h-3.5 w-3.5 text-sky-400 shrink-0 mt-0.5" />
+              <span>
+                <strong className="text-slate-200">
+                  Reading 12/12 scores in context:
+                </strong>{" "}
+                Gemini 3.8 Flash and ERNIE 5.5 Flash passed all 12 cases on a
+                single grounded run. This confirms they cleared these specific
+                diagnostic checks—not that they are error-free under broader
+                adversarial load or multi-run variance.
+              </span>
+            </div>
           </div>
         </div>
 
@@ -533,17 +569,19 @@ export function OverviewTab({
           <div>
             <div className="flex items-center gap-2 text-slate-300 text-xs font-semibold uppercase tracking-wider mb-2">
               <ShieldAlert className="h-4 w-4 text-violet-400" />
-              Methodological Scope & Limits
+              Why 12 Cases? Scope &amp; Limits
             </div>
             <p className="text-sm text-slate-300 leading-relaxed">
               This is a reproducible{" "}
               <span className="text-white font-medium">
                 method demonstration
               </span>
-              , not a general model benchmark: 12 synthetic ES/CA cases, 1–2
-              runs per model at temperature 0 (still non-deterministic), and a
-              single bilingual reviewer who authored the cases, rubric, and
-              calibration traps.
+              , not a market benchmark. The 12 cases (6{" "}
+              <code className="text-xs text-cyan-300">es-ES</code> + 6{" "}
+              <code className="text-xs text-indigo-300">ca-ES</code>) map
+              1-to-1 to every high-risk defect family from the MQM audit while
+              keeping total volume at 72 replies so a single bilingual reviewer
+              could audit 100% of them.
             </p>
           </div>
           <button

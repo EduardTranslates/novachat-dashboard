@@ -135,5 +135,5 @@ export interface NovaChatData {
   calibration: CalibrationRow[];
 }
 
-export type TabId = "overview" | "defects" | "comparator" | "calibration";
+export type TabId = "overview" | "story" | "defects" | "comparator" | "calibration";
 export type MatrixPreset = "all" | "disagreements" | "queries" | "grounded_fails" | "all_fails";

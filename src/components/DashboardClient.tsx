@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import {
   BarChart3,
+  BookOpen,
   Cpu,
   ExternalLink,
   FileSearch,
@@ -11,6 +12,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { OverviewTab } from "./OverviewTab";
+import { ProjectStoryTab } from "./ProjectStoryTab";
 import { DefectsTab } from "./DefectsTab";
 import { ComparatorTab } from "./ComparatorTab";
 import { CalibrationTab } from "./CalibrationTab";
@@ -65,12 +67,20 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
     id: TabId;
     label: string;
     badge?: string;
+    badgeAccent?: "emerald" | "default";
     icon: React.ReactNode;
   }[] = [
     {
       id: "overview",
       label: "Executive Overview",
       icon: <BarChart3 className="h-4 w-4" />,
+    },
+    {
+      id: "story",
+      label: "Project Story",
+      badge: "30s",
+      badgeAccent: "emerald",
+      icon: <BookOpen className="h-4 w-4" />,
     },
     {
       id: "defects",
@@ -112,8 +122,8 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Synthetic portfolio case study · 4 real LLMs · Offline static
-                  replay (zero API calls)
+                  Synthetic portfolio case study · 4 models across 6 runs ·
+                  Offline static replay (zero API calls)
                 </p>
               </div>
             </div>
@@ -155,21 +165,36 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                       setHighlightedDefectId(null);
                     }
                     setActiveTab(tab.id);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                     isActive
-                      ? "border-sky-400 text-white"
+                      ? tab.id === "story"
+                        ? "border-emerald-400 text-white"
+                        : "border-sky-400 text-white"
                       : "border-transparent text-slate-400 hover:text-slate-200 hover:border-navy-600"
                   }`}
                 >
-                  <span className={isActive ? "text-sky-400" : "text-slate-500"}>
+                  <span
+                    className={
+                      isActive
+                        ? tab.id === "story"
+                          ? "text-emerald-400"
+                          : "text-sky-400"
+                        : "text-slate-500"
+                    }
+                  >
                     {tab.icon}
                   </span>
                   {tab.label}
                   {tab.badge && (
                     <span
                       className={`font-mono text-[11px] px-1.5 py-0.5 rounded-md ${
-                        isActive
+                        tab.badgeAccent === "emerald"
+                          ? isActive
+                            ? "bg-emerald-500/25 text-emerald-200 border border-emerald-500/40"
+                            : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                          : isActive
                           ? "bg-sky-500/20 text-sky-200"
                           : "bg-navy-800 text-slate-400"
                       }`}
@@ -189,9 +214,21 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
         {activeTab === "overview" && (
           <OverviewTab
             data={data}
-            onNavigateTab={(t) => setActiveTab(t)}
+            onNavigateTab={(t) => {
+              setActiveTab(t);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             onJumpToRun={handleJumpToRun}
             onJumpToPreset={handleJumpToPreset}
+          />
+        )}
+
+        {activeTab === "story" && (
+          <ProjectStoryTab
+            onNavigateTab={(t) => {
+              setActiveTab(t);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
           />
         )}
 
