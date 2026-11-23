@@ -16,6 +16,7 @@ import { ProjectStoryTab } from "./ProjectStoryTab";
 import { DefectsTab } from "./DefectsTab";
 import { ComparatorTab } from "./ComparatorTab";
 import { CalibrationTab } from "./CalibrationTab";
+import { LiveCheckerTab } from "./LiveCheckerTab";
 import type { MatrixPreset, NovaChatData, TabId } from "@/types/novachat";
 
 export function DashboardClient({ data }: { data: NovaChatData }) {
@@ -67,7 +68,7 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
     id: TabId;
     label: string;
     badge?: string;
-    badgeAccent?: "emerald" | "default";
+    badgeAccent?: "emerald" | "sky" | "default";
     icon: React.ReactNode;
   }[] = [
     {
@@ -100,6 +101,13 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
       badge: `${data.kpis.calibration_judge_agree}/${data.kpis.calibration_total}`,
       icon: <Scale className="h-4 w-4" />,
     },
+    {
+      id: "checker",
+      label: "Live LQA Checker",
+      badge: "Python",
+      badgeAccent: "sky",
+      icon: <Terminal className="h-4 w-4" />,
+    },
   ];
 
   return (
@@ -122,8 +130,8 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Synthetic portfolio case study · 4 models across 6 runs ·
-                  Offline static replay (zero API calls)
+                  Synthetic portfolio case study · 4 models across 6 runs · Live
+                  Python LQA checker + static eval replay
                 </p>
               </div>
             </div>
@@ -167,7 +175,7 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                     setActiveTab(tab.id);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className={`inline-flex items-center gap-2 whitespace-nowrap px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
+                  className={`inline-flex items-center gap-2 whitespace-nowrap px-3.5 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
                     isActive
                       ? tab.id === "story"
                         ? "border-emerald-400 text-white"
@@ -194,6 +202,10 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
                           ? isActive
                             ? "bg-emerald-500/25 text-emerald-200 border border-emerald-500/40"
                             : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                          : tab.badgeAccent === "sky"
+                          ? isActive
+                            ? "bg-sky-500/25 text-sky-100 border border-sky-400/45"
+                            : "bg-sky-500/15 text-sky-300 border border-sky-500/30"
                           : isActive
                           ? "bg-sky-500/20 text-sky-200"
                           : "bg-navy-800 text-slate-400"
@@ -265,6 +277,14 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
             judgeModel={data.meta.judge_model}
           />
         )}
+
+        {activeTab === "checker" && (
+          <LiveCheckerTab
+            glossary={data.lqa_checker.glossary}
+            rules={data.lqa_checker.rules}
+            sampleStrings={data.lqa_checker.sample_strings}
+          />
+        )}
       </main>
 
       {/* Footer */}
@@ -281,10 +301,16 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-navy-700 bg-navy-900 px-2.5 py-1 text-[11px] text-slate-400">
+            <button
+              onClick={() => {
+                setActiveTab("checker");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/35 bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 text-[11px] text-sky-200 transition-colors"
+            >
               <Terminal className="h-3 w-3 text-sky-400" />
-              Next: Live Python LQA Checker &amp; Vercel AI SDK Sandbox
-            </span>
+              Live Python LQA Checker · Phase 3 next: Vercel AI SDK Chatbot
+            </button>
           </div>
         </div>
       </footer>

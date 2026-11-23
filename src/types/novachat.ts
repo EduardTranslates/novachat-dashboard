@@ -98,6 +98,60 @@ export interface CalibrationRow {
   answer: string;
 }
 
+export interface GlossaryEntry {
+  en: string;
+  "es-ES": string;
+  "ca-ES": string;
+  note: string;
+}
+
+export interface LqaRules {
+  gendered_terms: Record<string, string[]>;
+  castilianisms_ca: string[];
+  obsolete_diacritics_ca: string[];
+  catalan_ui_terms_in_es?: string[];
+  allow_identical: string[];
+  gendered_address_terms?: Record<string, string[]>;
+}
+
+export interface SampleStringRow {
+  id: string;
+  locale: "es-ES" | "ca-ES" | string;
+  context: string;
+  max_chars: string;
+  source: string;
+  target: string;
+}
+
+export interface LqaIssue {
+  id: string;
+  locale: string;
+  check: string;
+  mqm_category: string;
+  severity: "Critical" | "Major" | "Minor";
+  message: string;
+  target: string;
+}
+
+export interface LqaCheckResponse {
+  ok: boolean;
+  engine: "python-serverless" | "ts-local-fallback";
+  python_version: string;
+  elapsed_ms: number;
+  strings_checked: number;
+  flagged_strings: number;
+  clean_strings: number;
+  issue_count: number;
+  by_severity: {
+    Critical: number;
+    Major: number;
+    Minor: number;
+  };
+  by_check: Record<string, number>;
+  issues: LqaIssue[];
+  error?: string;
+}
+
 export interface NovaChatData {
   meta: {
     project: string;
@@ -133,7 +187,23 @@ export interface NovaChatData {
   defects: DefectItem[];
   evaluations: EvalRow[];
   calibration: CalibrationRow[];
+  lqa_checker: {
+    glossary: GlossaryEntry[];
+    rules: LqaRules;
+    sample_strings: SampleStringRow[];
+  };
 }
 
-export type TabId = "overview" | "story" | "defects" | "comparator" | "calibration";
-export type MatrixPreset = "all" | "disagreements" | "queries" | "grounded_fails" | "all_fails";
+export type TabId =
+  | "overview"
+  | "story"
+  | "defects"
+  | "comparator"
+  | "calibration"
+  | "checker";
+export type MatrixPreset =
+  | "all"
+  | "disagreements"
+  | "queries"
+  | "grounded_fails"
+  | "all_fails";

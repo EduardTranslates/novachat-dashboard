@@ -475,6 +475,15 @@ export function OverviewTab({
                     <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
                       {layer.desc}
                     </p>
+                    {layer.key === "Python UI checker" && (
+                      <button
+                        onClick={() => onNavigateTab("checker")}
+                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-sky-300 hover:text-sky-200 transition-colors"
+                      >
+                        Try lqa_checks.py live in browser
+                        <ArrowRight className="h-3 w-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
