@@ -6,7 +6,7 @@
 
 Interactive web application and live ES/CA localization QA lab built on top of the **[novachat-es-ca-lqa](https://github.com/EduardTranslates/novachat-es-ca-lqa)** synthetic case study.
 
-> **Live app:** [https://novachat-dashboard-eight.vercel.app/](https://novachat-es-ca-lqa.vercel.app/)
+> **Live app:** [https://novachat-es-ca-lqa.vercel.app/](https://novachat-es-ca-lqa.vercel.app/)
 
 <!-- Optional: drop 2 screenshots into public/screenshots/ and uncomment below
 ![NovaChat Dashboard Overview](public/screenshots/overview.png)
