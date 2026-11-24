@@ -160,7 +160,7 @@ async function tryOpenRouterModel(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://novachat-dashboard-eight.vercel.app",
+        "HTTP-Referer": "https://novachat-es-ca-lqa.vercel.app",
         "X-Title": "NovaChat ES/CA LQA Dashboard",
       },
       signal: controller.signal,

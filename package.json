@@ -1,6 +1,6 @@
 {
   "name": "novachat-dashboard",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,6 +26,6 @@
     "typescript": "^5.7.3"
   },
   "engines": {
-    "node": ">=18.18.0"
+    "node": "20.x"
   }
 }
