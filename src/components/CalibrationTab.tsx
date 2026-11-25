@@ -205,8 +205,10 @@ export function CalibrationTab({
             <span className="font-mono text-white">16/20</span> (still passing
             all 4 deceptive traps). Because the same author designed the rubric
             and traps, 20/20 validates rubric sanity rather than providing an
-            independent population accuracy estimate (there is no separate 
-            held-out validation set yet).
+            independent population accuracy estimate (there is no separate
+            held-out validation set yet). Applies only to the refund-policy
+            judge (EC-005/EC-006), not to the optional live semantic/grammar
+            review.
           </div>
         </div>
       </section>

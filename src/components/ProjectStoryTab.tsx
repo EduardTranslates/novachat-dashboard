@@ -859,8 +859,9 @@ export function ProjectStoryTab({
                   carefully targeted bilingual cases (6 runs: 1 baseline + 5
                   grounded) so I could personally audit 100% of the 72 answers.
                   Because I wrote the questions, rules, and calibration traps
-                  myself, treat the 20/20 judge score as calibration-set sanity
-                  rather than a held-out benchmark.
+                  myself, treat the 20/20 refund-policy judge score as
+                  calibration-set sanity (it does not cover the optional live
+                  semantic/grammar check, and there is no held-out set yet).
                 </p>
                 <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
                   <strong className="text-slate-200">Authorship note:</strong> I
@@ -881,8 +882,9 @@ export function ProjectStoryTab({
                   medidos (6 ejecuciones: 1 base + 5 con contexto) para poder
                   auditar personalmente el 100 % de las 72 respuestas. Como las
                   preguntas, las reglas y las trampas de calibración las escribí
-                  yo mismo, toma el 20/20 del juez como acuerdo en el conjunto
-                  de calibración y no como un ranking universal.
+                  yo mismo, toma el 20/20 del juez de reembolsos como acuerdo en
+                  el conjunto de calibración (no cubre la revisión semántica en
+                  vivo y aún no hay un conjunto held-out independiente).
                 </p>
                 <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
                   <strong className="text-slate-200">Nota de autoría:</strong>{" "}
@@ -904,8 +906,10 @@ export function ProjectStoryTab({
                   escollits (6 execucions: 1 base + 5 amb context) per poder
                   auditar personalment el 100 % de les 72 respostes. Com que les
                   preguntes, les regles i les trampes de calibració les vaig
-                  escriure jo mateix, pren-te el 20/20 del jutge com a acord al
-                  conjunt de calibració i no com un rànquing universal.
+                  escriure jo mateix, pren-te el 20/20 del jutge de
+                  reemborsaments com a acord al conjunt de calibració (no
+                  cobreix la revisió semàntica en directe i encara no hi ha un
+                  conjunt held-out independent).
                 </p>
                 <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
                   <strong className="text-slate-200">Nota d'autoria:</strong>{" "}

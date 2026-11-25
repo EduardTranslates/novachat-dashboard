@@ -167,7 +167,7 @@ export function OverviewTab({
             </span>
           </div>
           <div className="mt-1 text-[11px] text-slate-400">
-            Simulated UI + system + AI audit ({kpis.defects_by_locale["es-ES"] ?? 0}{" "}
+            13 UI · 8 system · 4 AI · 3 onboarding ({kpis.defects_by_locale["es-ES"] ?? 0}{" "}
             es-ES · {kpis.defects_by_locale["ca-ES"] ?? 0} ca-ES)
           </div>
         </button>
@@ -211,10 +211,10 @@ export function OverviewTab({
             </span>
           </div>
           <div className="mt-2 text-xs text-amber-300">
-            Binary pass/fail · {kpis.disagreements_count} auto-PASS / human-FAIL
+            FAIL vs. non-FAIL · {kpis.disagreements_count} auto-PASS / human-FAIL
           </div>
           <div className="mt-1 text-[11px] text-violet-300">
-            {kpis.query_count} QUERY escalated to PO (not fail disagreements)
+            64/66 excl. {kpis.query_count} QUERY (PO escalations)
           </div>
         </button>
 
@@ -235,7 +235,7 @@ export function OverviewTab({
             </span>
           </div>
           <div className="mt-2 text-xs text-slate-300">
-            Calibration-set agreement (not held-out)
+            Refund-policy judge only (calibration set)
           </div>
           <div className="mt-1 text-[11px] text-slate-400">
             vs.{" "}
@@ -251,18 +251,18 @@ export function OverviewTab({
         </button>
       </section>
 
-      {/* Dataset Provenance Strip (explicitly separates the 4 datasets) */}
+      {/* Dataset Provenance Strip (explicitly separates the 4 collections) */}
       <section className="rounded-xl border border-navy-700/80 bg-navy-900/60 px-4 py-3">
         <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-sky-300 mb-2">
           <Database className="h-3.5 w-3.5" />
-          Dataset Provenance · 4 Distinct Artifacts (Do Not Conflate Denominators)
+          Dataset Provenance · Four Data Collections with Distinct Purposes
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] text-slate-400 leading-relaxed">
           <div>
             <strong className="text-slate-200">1. MQM Inventory (28):</strong>{" "}
-            Simulated product audit across UI strings, system messages &
-            initial AI replies (defines 3 Critical archetypes: D-002, D-005,
-            D-006).
+            Audit logged in <code>defect_log.csv</code>: 13 UI strings, 8 system
+            messages, 4 AI responses & 3 onboarding items (defines 3
+            Critical archetypes: D-002, D-005, D-006).
           </div>
           <div>
             <strong className="text-slate-200">2. Model Evals (72):</strong>{" "}
@@ -272,7 +272,8 @@ export function OverviewTab({
           <div>
             <strong className="text-slate-200">3. Judge Calibration (20):</strong>{" "}
             6 mock fixtures + 8 recorded Gemini replies + 6 adversarial traps
-            used to tune the refund-policy rubric (no separate held-out set yet).
+            used to calibrate the refund-policy judge (EC-005/EC-006) only — not
+            the optional live semantic/grammar check (no held-out set yet).
           </div>
           <div>
             <strong className="text-slate-200">4. Checker Batch (20):</strong>{" "}
@@ -293,14 +294,15 @@ export function OverviewTab({
                   Model Performance: 4 Models Across 6 Runs (n = 12 cases/run)
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Asymmetric design by intent: only{" "}
+                  Evaluated on the same 12 cases: within-model baseline vs.
+                  grounded comparison is available for{" "}
                   <strong className="text-slate-200">
                     Gemini 3.5 Flash-Lite
                   </strong>{" "}
-                  has a paired ungrounded baseline (1 baseline + 2 grounded runs
-                  to test run-to-run consistency); Gemini 3.8 Flash, Nemotron 3
-                  Ultra, and ERNIE 5.5 Flash ran 1 grounded pass each. Click any
-                  run to inspect its 12 replies.
+                  (1 ungrounded baseline + 2 grounded runs using the same prompt
+                  at temperature 0 to check run-to-run consistency); Gemini 3.8
+                  Flash, Nemotron 3 Ultra, and ERNIE 5.5 Flash ran grounded
+                  only. Click any run to inspect its 12 replies.
                 </p>
               </div>
               <div className="inline-flex rounded-lg border border-navy-700 bg-navy-900 p-0.5 self-start shrink-0">
@@ -469,13 +471,16 @@ export function OverviewTab({
                   Agreement & 12/12 context:
                 </strong>{" "}
                 <span className="font-mono text-slate-200">70/72</span> compares
-                automated suite PASS/FAIL against human binary pass/fail at
-                response level (6{" "}
-                <span className="font-mono text-violet-300">QUERY</span> replies
-                are treated as non-fail PO escalations; both disagreements were
-                auto-PASS / human-FAIL Catalan grammar errors). Gemini 3.8 Flash
-                and ERNIE 5.5 Flash scored 12/12 on a single grounded run—not a
-                claim of zero errors under broader adversarial load.
+                automated suite vs. human verdicts on{" "}
+                <strong className="text-slate-200">FAIL vs. non-FAIL</strong>{" "}
+                (counting the 6 auto-PASS / human-
+                <span className="font-mono text-violet-300">QUERY</span> PO
+                escalations as non-fail;{" "}
+                <span className="font-mono text-slate-200">64/66</span> on
+                decisive pass/fail verdicts excluding QUERY). Both disagreements
+                were auto-PASS / human-FAIL Catalan grammar errors. Gemini 3.8
+                Flash and ERNIE 5.5 Flash scored 12/12 on a single grounded
+                run—not a claim of zero errors under broader adversarial load.
               </span>
             </div>
           </div>
@@ -596,9 +601,11 @@ export function OverviewTab({
               Where Automation Still Fails
             </div>
             <p className="text-sm text-slate-300 leading-relaxed">
-              The automated suite matched human binary pass/fail on{" "}
-              <span className="font-mono text-white">70/72</span> answers. Both
-              misses were auto-PASS / human-FAIL Catalan grammar errors:{" "}
+              Auto–human agreement was{" "}
+              <span className="font-mono text-white">70/72</span> on FAIL vs.
+              non-FAIL (<span className="font-mono text-white">64/66</span>{" "}
+              excluding 6 PO QUERY escalations). Both misses were auto-PASS /
+              human-FAIL Catalan grammar errors:{" "}
               <code className="px-1.5 py-0.5 rounded bg-navy-900 text-amber-200 text-xs">
                 se'te cobrarà
               </code>{" "}
