@@ -52,7 +52,7 @@ All static dashboard views and the **Python Live LQA Checker (Layer 1)** work wi
 
 ## Run Locally & Verify Integrity
 
-Requires **Node.js `20.x`** and **Python `3.10+`**:
+Requires **Node.js `26.x`** and **Python `3.10+`**:
 
 ```bash
 # 1. Regenerate compiled JSON + Python serverless data module & run integrity tests
