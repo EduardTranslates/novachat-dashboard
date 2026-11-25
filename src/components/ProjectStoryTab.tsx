@@ -171,14 +171,14 @@ export function ProjectStoryTab({
               After seven years in software localization, subtitling, and
               Linguistic Quality Assurance, I had a hunch: feeding AI chatbots
               huge cabinets of user manuals might make them more sufferable than
-              some humans in their field, but it won&apos;t magically make them
+              some humans in their field, but it won't magically make them
               speak good Spanish or Catalan — a language that knows interference
               (and <em>intraference</em>) well enough.
             </p>
             <p>
               So instead of just{" "}
               <span className="text-slate-100 font-medium">
-                LinkedRantIn&apos;
+                LinkedRantIn'
               </span>{" "}
               about it, I did what any self-respecting{" "}
               <del className="text-slate-500 decoration-rose-400/70">
@@ -187,8 +187,8 @@ export function ProjectStoryTab({
               nerd with a DIY mindset would do: I wrestled with Python, invented
               a fictional SaaS company (
               <strong className="text-white">NovaChat</strong>), built a real
-              testing lab from scratch, and watched four real AI models play the
-              weirdest Parcheesi game ever.
+              testing lab, and watched four real AI models play the weirdest
+              Parcheesi game ever.
             </p>
           </div>
         )}
@@ -221,9 +221,8 @@ export function ProjectStoryTab({
               friki con iniciativa podía hacer: batallé con Python, me inventé
               una empresa SaaS ficticia (
               <strong className="text-white">NovaChat</strong>), monté un
-              laboratorio de pruebas real desde cero y puse a cuatro modelos
-              reales de IA a jugar la partida de parchís más esperpéntica
-              posible.
+              laboratorio de pruebas real y puse a cuatro modelos reales de IA a
+              jugar la partida de parchís más esperpéntica posible.
             </p>
           </div>
         )}
@@ -232,13 +231,13 @@ export function ProjectStoryTab({
           <div className="space-y-3.5 text-sm md:text-[15px] text-slate-300 leading-relaxed">
             <p>
               Tothom parla de si la IA ens substituirà com a traductors, però a
-              mi, personalment, m&apos;interessava molt més obrir el capó,
-              trobar l&apos;avaria i saber on ens necessiten.
+              mi, personalment, m'interessava molt més obrir el capó,
+              trobar l'avaria i saber on ens necessiten.
             </p>
             <p>
               Després de set anys en localització de programari, subtitulació i
               control de qualitat lingüística (LQA), tenia un pressentiment:
-              afartar un xatbot amb tones de manuals d&apos;usuari potser el fa
+              afartar un xatbot amb tones de manuals d'usuari potser el fa
               més tolerable que molts humans al seu sector, però no aconseguirà
               per art de màgia que parli amb naturalitat ni castellà ni català
               —una llengua que coneix la interferència (i la{" "}
@@ -249,22 +248,21 @@ export function ProjectStoryTab({
               <span className="text-slate-100 font-medium">
                 LinkedInproperis
               </span>
-              , vaig fer l&apos;única cosa que un autèntic{" "}
+              , vaig fer l'única cosa que un autèntic{" "}
               <del className="text-slate-500 decoration-rose-400/70">
                 lingüista
               </del>{" "}
               friki amb iniciativa podia fer: vaig batallar amb Python, em vaig
               inventar una empresa SaaS fictícia (
               <strong className="text-white">NovaChat</strong>), vaig muntar un
-              laboratori de proves real des de zero i vaig mirar com quatre
-              models reals d&apos;IA jugaven la partida de parxís més
-              estrambòtica possible.
+              laboratori de proves real i vaig mirar com quatre models reals
+              d'IA jugaven la partida de parxís més estrambòtica possible.
             </p>
           </div>
         )}
       </section>
 
-      {/* Section 2: How It Works */}
+      {/* Section 2: How It Works (Aligned to the stable 3-Layer QA Architecture) */}
       <section className="rounded-2xl border border-navy-700 bg-navy-800/90 p-6 md:p-7 space-y-4">
         <div className="flex items-start gap-3">
           <div className="h-9 w-9 rounded-xl border border-indigo-400/30 bg-indigo-500/10 flex items-center justify-center text-indigo-300 shrink-0 mt-0.5">
@@ -273,10 +271,10 @@ export function ProjectStoryTab({
           <div>
             <div className="text-[11px] font-mono uppercase tracking-wider text-indigo-300">
               {lang === "en"
-                ? "02 · No jargon, 3 simple steps"
+                ? "02 · 3 QA layers, zero jargon"
                 : lang === "es"
-                ? "02 · Sin jerga, en 3 sencillos pasos"
-                : "02 · Sense argot, en 3 senzills passos"}
+                ? "02 · 3 capas de QA, sin jerga"
+                : "02 · 3 capes de QA, sense argot"}
             </div>
             <h3 className="text-lg md:text-xl font-semibold text-white">
               {lang === "en"
@@ -290,10 +288,10 @@ export function ProjectStoryTab({
 
         <p className="text-sm md:text-[15px] text-slate-300 leading-relaxed">
           {lang === "en"
-            ? "I like to picture it as a three-layer chocolate cake, but let's think of it as a quality-control conveyor belt for a multilingual customer support bot:"
+            ? "I like to picture it as a three-layer chocolate cake, but let's think of it as a three-layer quality-control conveyor belt for a multilingual customer support bot — tested across 6 runs (1 blind Flash-Lite baseline + 5 grounded runs across 4 models) with everyday and adversarial ES/CA prompts:"
             : lang === "es"
-            ? "A mí me gusta imaginarlo como una tarta tres chocolates, pero mejor imagínatelo como un bot multilingüe de atención al cliente pasando por una cinta transportadora en el área de control de calidad:"
-            : "A mi m'agrada imaginar-m'ho com un pastís de tres xocolates, però millor imagina-t'ho com un bot multilingüe d'atenció al client passant per una cinta transportadora a l'àrea de control de qualitat:"}
+            ? "A mí me gusta imaginarlo como una tarta tres chocolates, pero mejor imagínatelo como un bot multilingüe de atención al cliente pasando por una cinta de control de calidad de tres capas —puesto a prueba en 6 ejecuciones (1 a ciegas con Flash-Lite + 5 con contexto en 4 modelos) con preguntas cotidianas y trampas en ES/CA:"
+            : "A mi m'agrada imaginar-m'ho com un pastís de tres xocolates, però millor imagina-t'ho com un bot multilingüe d'atenció al client passant per una cinta de control de qualitat de tres capes —posat a prova en 6 execucions (1 a cegues amb Flash-Lite + 5 amb context en 4 models) amb preguntes quotidianes i trampes en ES/CA:"}
         </p>
 
         {lang === "en" && (
@@ -304,11 +302,12 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  The Checklist (for robot work):
+                  Layer 1 — Deterministic Rules (Python robot work):
                 </strong>{" "}
-                First, a small Python script checks the mechanical stuff
-                humankind shouldn&apos;t waste time on: broken code variables,
-                buttons that overflow on mobile screens, missing Spanish{" "}
+                A small Python script checks the mechanical stuff humankind
+                shouldn't waste time on: broken code variables, UI strings
+                that exceed mobile character limits, approved glossary terms,
+                missing Spanish{" "}
                 <code className="px-1.5 py-0.5 rounded bg-navy-950 text-sky-200 text-xs">
                   ¿
                 </code>{" "}
@@ -330,13 +329,13 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  The Stress Test (with real customer questions):
+                  Layer 2 — Semantic Evaluation (Promptfoo + Calibrated LLM
+                  Judge):
                 </strong>{" "}
-                Next, I asked four different AIs everyday support questions in
-                Spanish and Catalan. First <em>blind</em> (no company manual)
-                and then <em>grounded</em> (with real user menus and refund
-                rules), plus a few cheeky trick questions to see if they&apos;d
-                fall for them (and fancy myself smarter than AI).
+                Automated assertions and a rubric-calibrated judge verify policy
+                compliance and grounding across real ES/CA support questions and
+                cheeky adversarial traps — catching loopholes like hidden store
+                credits or deceptive negations that brittle regexes miss.
               </div>
             </li>
 
@@ -346,12 +345,16 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  The Human Eye (or the white-glove test):
+                  Layer 3 — Bilingual Human Review (the white-glove test):
                 </strong>{" "}
-                Finally, I sat down and read every single AI reply myself, in an
+                Finally, I sat down and read all 72 model replies myself, in an
                 attempt to justify my linguistics studies. No skipping, no
-                guessing. I wanted to see exactly what the code caught, what
-                slipped past it, and how much time we have left until an army of
+                guessing — catching subtle grammar slips, dialectal drift, and
+                policy extrapolations that require Product Owner escalation (
+                <code className="px-1.5 py-0.5 rounded bg-navy-950 text-violet-200 text-xs">
+                  QUERY
+                </code>
+                ), and seeing how much time we have left until an army of
                 chatbots enslaves us.
               </div>
             </li>
@@ -366,12 +369,12 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  El checklist (trabajo robótico):
+                  Capa 1 — Reglas deterministas (trabajo robótico en Python):
                 </strong>{" "}
-                Primero, un pequeño script de Python revisa lo mecánico; todo en
-                lo que la humanidad no debería perder el tiempo: variables de
-                código rotas, botones que sobresalen de la pantalla del móvil,
-                signos de apertura{" "}
+                Un pequeño script de Python revisa lo mecánico en lo que la
+                humanidad no debería perder el tiempo: variables de código
+                rotas, cadenas de interfaz que superan el límite de caracteres
+                en móvil, términos de glosario, signos de apertura{" "}
                 <code className="px-1.5 py-0.5 rounded bg-navy-950 text-sky-200 text-xs">
                   ¿
                 </code>{" "}
@@ -393,14 +396,14 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  La prueba de estrés (con preguntas reales de clientes):
+                  Capa 2 — Evaluación semántica (Promptfoo + Juez LLM
+                  calibrado):
                 </strong>{" "}
-                Después, les hice a cuatro IAs varias preguntas de atención al
-                cliente en español y catalán. Primero <em>a ciegas</em> (sin
-                manual de empresa) y luego <em>con contexto</em> (con menús
-                reales y políticas de reembolso), además de unas cuantas
-                preguntas trampa con mala leche para ver si picaban (y sentirme
-                más listo que la IA).
+                Las aserciones automáticas y un juez calibrado con rúbrica
+                comprueban el cumplimiento de políticas y datos en preguntas
+                reales y trampas con mala leche, cazando escapatorias como
+                créditos ocultos o negaciones engañosas que se les escapan a los
+                regex.
               </div>
             </li>
 
@@ -410,13 +413,18 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  El ojo humano (o la prueba del algodón):
+                  Capa 3 — Revisión humana bilingüe (la prueba del algodón):
                 </strong>{" "}
-                Por último, me senté a leer yo mismo cada una de las respuestas,
-                en un intento de justificar mis estudios de lingüística. Sin
-                saltarme nada, sin suponer nada. Quería ver exactamente qué
-                cazaba el código, qué se le colaba y cuánto tiempo nos queda
-                hasta que un ejército de chatbots nos esclavice.
+                Por último, me senté a leer yo mismo las 72 respuestas, en un
+                intento de justificar mis estudios de lingüística. Sin saltarme
+                nada, sin suponer nada —detectando fallos sutiles de gramática,
+                naturalidad y extrapolaciones que hay que escalar al Product
+                Owner (
+                <code className="px-1.5 py-0.5 rounded bg-navy-950 text-violet-200 text-xs">
+                  QUERY
+                </code>
+                ), y midiendo cuánto tiempo nos queda hasta que un ejército de
+                chatbots nos esclavice.
               </div>
             </li>
           </ol>
@@ -430,12 +438,12 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  El checklist (feina robòtica):
+                  Capa 1 — Regles deterministes (feina robòtica en Python):
                 </strong>{" "}
-                Primer, un petit script de Python revisa tot allò mecànic en què
-                la humanitat no hauria de perdre el temps: variables de codi
-                trencades, botons que es desborden a la pantalla del mòbil,
-                signes d&apos;obertura{" "}
+                Un petit script de Python revisa tot allò mecànic en què la
+                humanitat no hauria de perdre el temps: variables de codi
+                trencades, cadenes d'interfície que superen el límit de
+                caràcters al mòbil, termes de glossari, signes d'obertura{" "}
                 <code className="px-1.5 py-0.5 rounded bg-navy-950 text-sky-200 text-xs">
                   ¿
                 </code>{" "}
@@ -457,14 +465,12 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  La prova d&apos;estrès (amb preguntes reals de clients):
+                  Capa 2 — Avaluació semàntica (Promptfoo + Jutge LLM calibrat):
                 </strong>{" "}
-                Després, vaig fer a quatre IA preguntes d&apos;atenció al client
-                en castellà i català. Primer <em>a cegues</em> (sense manual
-                d&apos;empresa) i després <em>amb context</em> (amb menús reals
-                i polítiques de reemborsament), a més d&apos;unes quantes
-                preguntes trampa amb mala bava per veure si hi queien (i
-                creure&apos;m més llest que la IA).
+                Les assercions automàtiques i un jutge calibrat amb rúbrica
+                verifiquen el compliment de polítiques i dades en preguntes
+                reals i trampes amb mala bava, caçant escapatòries com crèdits
+                ocults o negacions enganyoses que se li escapen al regex.
               </div>
             </li>
 
@@ -474,13 +480,18 @@ export function ProjectStoryTab({
               </span>
               <div className="text-sm text-slate-300 leading-relaxed">
                 <strong className="text-white">
-                  L&apos;ull humà (o la prova del cotó):
+                  Capa 3 — Revisió humana bilingüe (la prova del cotó):
                 </strong>{" "}
-                Finalment, em vaig asseure a llegir jo mateix totes i cadascuna
-                de les respostes, en un intent de justificar els meus estudis de
-                lingüística. Sense saltar-me res, sense suposar res. Volia veure
-                exactament què caçava el codi, què se li escapava i quant de
-                temps tenim fins que un exèrcit de xatbots ens esclavitzi.
+                Finalment, em vaig asseure a llegir jo mateix totes 72
+                respostes, en un intent de justificar els meus estudis de
+                lingüística. Sense saltar-me res, sense suposar res —detectant
+                relliscades subtils de gramàtica, naturalitat i extrapolacions
+                que cal escalar al Product Owner (
+                <code className="px-1.5 py-0.5 rounded bg-navy-950 text-violet-200 text-xs">
+                  QUERY
+                </code>
+                ), i calculant quant de temps tenim fins que un exèrcit de
+                xatbots ens esclavitzi.
               </div>
             </li>
           </ol>
@@ -515,26 +526,28 @@ export function ProjectStoryTab({
           <ul className="space-y-3 text-sm md:text-[15px] text-slate-300 leading-relaxed">
             <li className="rounded-xl border border-rose-500/25 bg-rose-500/[0.05] p-4">
               <strong className="text-rose-200">
-                Without a manual, AIs become SmartA(I)sses: wildly confident
-                liars.
+                Without a manual, AIs become SmartA(I)sses: confidently wrong.
               </strong>{" "}
-              Left on its own, the chatbot cheerfully invented a €12 Pro plan,
-              promised a non-existent 50% student discount, or exiled users to
-              Never-Menu Land.
+              In the ungrounded Flash-Lite baseline, the chatbot cheerfully
+              invented a €12 Pro plan, promised a non-existent 50% student
+              discount, or exiled users to Never-Menu Land (8 Critical
+              hallucinations in 12 questions).
             </li>
 
             <li className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.05] p-4">
               <strong className="text-emerald-200">
-                Give them the facts, and the hallucinations vanish.
+                Give them the facts, and critical factual hallucinations
+                vanished in this test.
               </strong>{" "}
-              The moment I handed the models real rules and a menu map, every
-              single Critical factual hallucination disappeared.
+              Once real policies and the UI menu map were added to the prompt,
+              Critical factual hallucinations dropped from 8 in the baseline to
+              0 across all 5 grounded runs on 4 models.
             </li>
 
             <li className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.06] p-4">
               <strong className="text-indigo-200">
-                &ldquo;Large Language Model&rdquo; doesn&apos;t necessarily mean
-                &ldquo;Precise Language Model.&rdquo;
+                “Large Language Model” doesn't necessarily mean
+                “Precise Language Model.”
               </strong>{" "}
               Even with the right facts, Spanish kept sneaking into Catalan
               answers: mixing Spanish menu names into Catalan sentences, using
@@ -546,7 +559,7 @@ export function ProjectStoryTab({
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-indigo-200 text-xs">
                 vés
               </code>
-              ) that the spelling reform abolished 10 years ago, when Gemini was
+              ) abolished under the 2016 IEC spelling reform, when Gemini was
               still studying for its 3rd grade language tests.
             </li>
 
@@ -554,21 +567,25 @@ export function ProjectStoryTab({
               <strong className="text-amber-200">
                 The grand finale belonged to human review.
               </strong>{" "}
-              Two sneaky Catalan grammar errors walked right past all the
-              automated code: a misworded clitic pronoun (
+              Two sneaky Catalan grammar errors passed all automated checks
+              (auto-PASS / human-FAIL): a misworded clitic pronoun (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-amber-200 text-xs">
-                se&apos;te cobrarà
+                se'te cobrarà
+              </code>{" "}
+              →{" "}
+              <code className="px-1.5 py-0.5 rounded bg-navy-950 text-emerald-200 text-xs">
+                se't cobrarà
               </code>
-              ) and a model using the first-person plural &ldquo;we write to
-              support&rdquo; (
+              ) and a model using the first-person plural “we write to
+              support” (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-amber-200 text-xs">
                 escrivim
               </code>
-              ) instead of &ldquo;write to support&rdquo; (
+              ) instead of imperative “write to support” (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-emerald-200 text-xs">
                 escriu
               </code>
-              ). Code catches what it&apos;s able to identify, but the human eye
+              ). Code catches what it's able to identify, but the human eye
               is essential to ensure accuracy and authenticity.
             </li>
           </ul>
@@ -578,21 +595,24 @@ export function ProjectStoryTab({
           <ul className="space-y-3 text-sm md:text-[15px] text-slate-300 leading-relaxed">
             <li className="rounded-xl border border-rose-500/25 bg-rose-500/[0.05] p-4">
               <strong className="text-rose-200">
-                Sin manual, las IAs tienden a la cuñadIA: mienten con un descaro
-                pasmoso.
+                Sin manual, las IAs tienden a la cuñadIA: se equivocan con un
+                descaro pasmoso.
               </strong>{" "}
-              Sin una guía, el chatbot se inventaba alegremente un plan Pro de
-              12 €, prometía un falso descuento del 50 % para estudiantes o
-              desterraba a los usuarios al país de No Encaja Más.
+              En la ejecución sin guía de Flash-Lite, el chatbot se inventaba
+              alegremente un plan Pro de 12 €, prometía un falso descuento del
+              50 % para estudiantes o desterraba a los usuarios al país de No
+              Encaja Más (8 alucinaciones críticas en 12 preguntas).
             </li>
 
             <li className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.05] p-4">
               <strong className="text-emerald-200">
-                Dales los datos y las alucinaciones se esfuman.
+                Dales los datos y las alucinaciones factuales críticas
+                desaparecieron en esta prueba.
               </strong>{" "}
               En cuanto proporcioné a los modelos las reglas reales y el mapa de
-              menús, desaparecieron absolutamente todas las alucinaciones
-              factuales críticas.
+              menús, las alucinaciones factuales críticas bajaron de 8 en la
+              ejecución base a 0 en las 5 ejecuciones con contexto sobre 4
+              modelos.
             </li>
 
             <li className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.06] p-4">
@@ -610,9 +630,9 @@ export function ProjectStoryTab({
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-indigo-200 text-xs">
                 vés
               </code>
-              ) que la reforma ortográfica abolió hace diez años, cuando Gemini
-              todavía estaba estudiando para sus exámenes de lengua de 3.º de
-              primaria.
+              ) abolidos en la reforma ortográfica del IEC de 2016, cuando
+              Gemini todavía estaba estudiando para sus exámenes de lengua de
+              3.º de primaria.
             </li>
 
             <li className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-4">
@@ -620,9 +640,14 @@ export function ProjectStoryTab({
                 El broche de oro le tocó a la revisión humana.
               </strong>{" "}
               Dos furtivos errores de gramática catalana consiguieron burlar
-              todo el código: un pronombre clítico mal formado (
+              todo el código (aprobados en automático, suspendidos en revisión
+              humana): un pronombre clítico mal formado (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-amber-200 text-xs">
-                se&apos;te cobrarà
+                se'te cobrarà
+              </code>{" "}
+              →{" "}
+              <code className="px-1.5 py-0.5 rounded bg-navy-950 text-emerald-200 text-xs">
+                se't cobrarà
               </code>
               ) y un modelo usando la primera persona del plural «escribimos a
               soporte» (
@@ -644,21 +669,24 @@ export function ProjectStoryTab({
           <ul className="space-y-3 text-sm md:text-[15px] text-slate-300 leading-relaxed">
             <li className="rounded-xl border border-rose-500/25 bg-rose-500/[0.05] p-4">
               <strong className="text-rose-200">
-                Sense manual, les IA tendeixen a la cunyadIA: menteixen sense
-                vergonya ni recança.
+                Sense manual, les IA tendeixen a la cunyadIA: s'equivoquen
+                sense vergonya ni recança.
               </strong>{" "}
-              Sense guiatge, el xatbot s&apos;inventava de bon grat un pla Pro
-              de 12 €, prometia un fals descompte del 50 % per a estudiants o
-              desterrava els usuaris al país de Mai Menús.
+              A l'execució sense guiatge de Flash-Lite, el xatbot
+              s'inventava de bon grat un pla Pro de 12 €, prometia un fals
+              descompte del 50 % per a estudiants o desterrava els usuaris al
+              país de Mai Menús (8 al·lucinacions crítiques en 12 preguntes).
             </li>
 
             <li className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.05] p-4">
               <strong className="text-emerald-200">
-                Dona&apos;ls les dades i les al·lucinacions s&apos;esvaeixen.
+                Dona'ls les dades i les al·lucinacions factuals crítiques
+                van desaparèixer en aquesta prova.
               </strong>{" "}
               Tan bon punt vaig passar als models les regles reals i el mapa de
-              menús, van desaparèixer absolutament totes les al·lucinacions
-              factuals crítiques.
+              menús, les al·lucinacions factuals crítiques van baixar de 8 a la
+              prova base fins a 0 en totes 5 execucions amb context sobre 4
+              models.
             </li>
 
             <li className="rounded-xl border border-indigo-400/25 bg-indigo-500/[0.06] p-4">
@@ -676,8 +704,8 @@ export function ProjectStoryTab({
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-indigo-200 text-xs">
                 vés
               </code>
-              ) que la reforma ortogràfica va abolir fa deu anys, quan Gemini
-              encara estudiava per als seus exàmens de llengua de 3r de
+              ) abolits amb la reforma ortogràfica de l'IEC del 2016, quan
+              Gemini encara estudiava per als seus exàmens de llengua de 3r de
               primària.
             </li>
 
@@ -685,23 +713,28 @@ export function ProjectStoryTab({
               <strong className="text-amber-200">
                 La cirereta del pastís li va tocar a la revisió humana.
               </strong>{" "}
-              Dos errors furtius de gramàtica catalana van eludir tot el codi:
-              un pronom feble mal format (
+              Dos errors furtius de gramàtica catalana van eludir tot el codi
+              (aprovats en automàtic, suspesos en revisió humana): un pronom
+              feble mal format (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-amber-200 text-xs">
-                se&apos;te cobrarà
+                se'te cobrarà
+              </code>{" "}
+              →{" "}
+              <code className="px-1.5 py-0.5 rounded bg-navy-950 text-emerald-200 text-xs">
+                se't cobrarà
               </code>
               ) i un model fent servir la primera persona del plural «escrivim
-              al servei d&apos;assistència» (
+              al servei d'assistència» (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-amber-200 text-xs">
                 escrivim
               </code>
-              ) en lloc de l&apos;imperatiu «escriu» (
+              ) en lloc de l'imperatiu «escriu» (
               <code className="px-1.5 py-0.5 rounded bg-navy-950 text-emerald-200 text-xs">
                 escriu
               </code>
-              ). El codi caça allò que pot identificar, però l&apos;ull humà
+              ). El codi caça allò que pot identificar, però l'ull humà
               continua sent cabdal per a garantir la precisió i
-              l&apos;autenticitat.
+              l'autenticitat.
             </li>
           </ul>
         )}
@@ -777,15 +810,15 @@ export function ProjectStoryTab({
         {lang === "ca" && (
           <div className="space-y-3.5 text-sm md:text-[15px] text-slate-300 leading-relaxed">
             <p>
-              En equips reals d&apos;IA i localització, el temps és el recurs
+              En equips reals d'IA i localització, el temps és el recurs
               més valuós possible.
             </p>
             <p>
               Si poses traductors sènior a caçar dobles espais, variables
               trencades o errors obvis de glossari un per un, esgotes el seu
-              temps i la seva salut mental. D&apos;altra banda, si confies
-              cegament en l&apos;automatització total, una patinada gramatical o
-              una frase antinatural poden acabar a la pantalla d&apos;un usuari
+              temps i la seva salut mental. D'altra banda, si confies
+              cegament en l'automatització total, una patinada gramatical o
+              una frase antinatural poden acabar a la pantalla d'un usuari
               que ja tenia dubtes abans.
             </p>
             <p className="rounded-xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-slate-100 font-medium">
@@ -809,51 +842,80 @@ export function ProjectStoryTab({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300 leading-relaxed">
-          <div className="rounded-xl border border-navy-700/80 bg-navy-900/60 p-4 space-y-1.5">
+          <div className="rounded-xl border border-navy-700/80 bg-navy-900/60 p-4 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-violet-300 font-semibold">
               {lang === "en"
-                ? "Scope & Honest Limits"
+                ? "Scope, Honest Limits & Authorship"
                 : lang === "es"
-                ? "Alcance y límites razonables"
-                : "L'abast i límits raonables"}
+                ? "Alcance, límites razonables y autoría"
+                : "L'abast, límits raonables i autoria"}
             </div>
             {lang === "en" && (
-              <p className="text-xs md:text-sm text-slate-300">
-                NovaChat is a small, reproducible{" "}
-                <strong className="text-white">method demo</strong>, not a
-                massive market benchmark. I deliberately kept it to 12 carefully
-                targeted bilingual cases (one per major risk area) so I could
-                personally audit 100% of the answers. Because I wrote the
-                questions, rules, and trick cases myself, treat the perfect
-                scores as proof of method rather than a universal ranking of
-                these models.
-              </p>
+              <>
+                <p className="text-xs md:text-sm text-slate-300">
+                  NovaChat is a small, reproducible{" "}
+                  <strong className="text-white">method demo</strong>, not a
+                  massive market benchmark. I deliberately kept it to 12
+                  carefully targeted bilingual cases (6 runs: 1 baseline + 5
+                  grounded) so I could personally audit 100% of the 72 answers.
+                  Because I wrote the questions, rules, and calibration traps
+                  myself, treat the 20/20 judge score as calibration-set sanity
+                  rather than a held-out benchmark.
+                </p>
+                <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
+                  <strong className="text-slate-200">Authorship note:</strong> I
+                  designed the MQM audit, test cases, adversarial traps,
+                  bilingual glossary, judge rubric, and Python QA checks, and
+                  audited 100% of model replies; AI coding assistance helped
+                  accelerate the Next.js web interface scaffolding.
+                </p>
+              </>
             )}
             {lang === "es" && (
-              <p className="text-xs md:text-sm text-slate-300">
-                NovaChat es una{" "}
-                <strong className="text-white">demostración de método</strong>{" "}
-                pequeña y reproducible, no un <em>benchmark</em> masivo de
-                mercado. Lo limité deliberadamente a 12 casos bilingües muy
-                medidos (uno por cada área de riesgo principal) para poder
-                auditar personalmente el 100 % de las respuestas. Como las
-                preguntas, las reglas y los casos trampa los escribí yo mismo,
-                toma las puntuaciones perfectas como prueba de método y no como
-                una clasificación universal de estos modelos.
-              </p>
+              <>
+                <p className="text-xs md:text-sm text-slate-300">
+                  NovaChat es una{" "}
+                  <strong className="text-white">demostración de método</strong>{" "}
+                  pequeña y reproducible, no un <em>benchmark</em> masivo de
+                  mercado. Lo limité deliberadamente a 12 casos bilingües muy
+                  medidos (6 ejecuciones: 1 base + 5 con contexto) para poder
+                  auditar personalmente el 100 % de las 72 respuestas. Como las
+                  preguntas, las reglas y las trampas de calibración las escribí
+                  yo mismo, toma el 20/20 del juez como acuerdo en el conjunto
+                  de calibración y no como un ranking universal.
+                </p>
+                <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
+                  <strong className="text-slate-200">Nota de autoría:</strong>{" "}
+                  Diseñé la auditoría MQM, los casos de prueba, las trampas
+                  adversariales, el glosario bilingüe, la rúbrica del juez y las
+                  reglas de Python, y audité el 100 % de las respuestas; utilicé
+                  asistencia de IA de código para acelerar el montaje de la
+                  interfaz web en Next.js.
+                </p>
+              </>
             )}
             {lang === "ca" && (
-              <p className="text-xs md:text-sm text-slate-300">
-                NovaChat és una{" "}
-                <strong className="text-white">demostració de mètode</strong>{" "}
-                petita i reproduïble, no un <em>benchmark</em> massiu de mercat.
-                El vaig limitar deliberadament a 12 casos bilingües ben escollits
-                (un per cada àrea de risc principal) per poder auditar
-                personalment el 100 % de les respostes. Com que les preguntes,
-                les regles i els casos trampa els vaig escriure jo mateix,
-                pren-te les puntuacions perfectes com a prova de mètode i no com
-                un rànquing universal d&apos;aquests models.
-              </p>
+              <>
+                <p className="text-xs md:text-sm text-slate-300">
+                  NovaChat és una{" "}
+                  <strong className="text-white">demostració de mètode</strong>{" "}
+                  petita i reproduïble, no un <em>benchmark</em> massiu de
+                  mercat. El vaig limitar deliberadament a 12 casos bilingües ben
+                  escollits (6 execucions: 1 base + 5 amb context) per poder
+                  auditar personalment el 100 % de les 72 respostes. Com que les
+                  preguntes, les regles i les trampes de calibració les vaig
+                  escriure jo mateix, pren-te el 20/20 del jutge com a acord al
+                  conjunt de calibració i no com un rànquing universal.
+                </p>
+                <p className="text-xs text-slate-400 pt-1 border-t border-navy-800">
+                  <strong className="text-slate-200">Nota d'autoria:</strong>{" "}
+                  Vaig dissenyar l'auditoria MQM, els casos de prova, les
+                  trampes adversarials, el glossari bilingüe, la rúbrica del
+                  jutge i les regles de Python, i vaig auditar el 100 % de les
+                  respostes; vaig fer servir assistència d'IA de codi per
+                  accelerar l'estructura de la interfície web en Next.js.
+                </p>
+              </>
             )}
           </div>
 
@@ -868,11 +930,11 @@ export function ProjectStoryTab({
               </div>
               {lang === "en" && (
                 <p className="text-xs md:text-sm text-slate-300">
-                  I&apos;m <strong className="text-white">Eduard Aliod</strong>,
+                  I'm <strong className="text-white">Eduard Aliod</strong>,
                   born and raised in Reus (Catalonia). A passionate musician and
                   full-time restless language geek who realized two months ago
-                  that he wasn&apos;t geeky enough and that scrolling through
-                  Netflix wasn&apos;t as fun as scrolling through syntax errors.
+                  that he wasn't geeky enough and that scrolling through
+                  Netflix wasn't as fun as scrolling through syntax errors.
                   I bridge classic localization (subtitling, UI, musical
                   adaptation) with transcreation and AI evaluation (LQA,
                   auditing, red teaming, multimodal).
@@ -893,7 +955,7 @@ export function ProjectStoryTab({
               )}
               {lang === "ca" && (
                 <p className="text-xs md:text-sm text-slate-300">
-                  Soc l&apos;
+                  Soc l'
                   <strong className="text-white">Eduard Aliod</strong>, nascut i
                   criat a Reus (Catalunya). Músic apassionat i enderiat de la
                   llengua a temps complet, que fa un parell de mesos es va
@@ -901,7 +963,7 @@ export function ProjectStoryTab({
                   Netflix no molava tant com vagarejar entre errors de sintaxi.
                   Faig de pont entre la localització clàssica (subtitulació,
                   interfícies, adaptació musical), la transcreació i
-                  l&apos;avaluació d&apos;IA (LQA, auditoria,{" "}
+                  l'avaluació d'IA (LQA, auditoria,{" "}
                   <em>red-teaming</em>, multimodal).
                 </p>
               )}

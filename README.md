@@ -1,71 +1,55 @@
-# NovaChat ES/CA — Interactive LQA, Python Checker & Live AI Sandbox
+# NovaChat ES/CA — Interactive LQA & LLM Evaluation Dashboard
 
-[![CI — Data Integrity & Next.js Build](https://github.com/EduardTranslates/novachat-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/EduardTranslates/novachat-dashboard/actions/workflows/ci.yml)
-[![Live Demo on Vercel](https://img.shields.io/badge/Live%20Demo-Vercel-0ea5e9?style=flat&logo=vercel)](https://novachat-es-ca-lqa.vercel.app/)
-[![Source Case Study](https://img.shields.io/badge/Case%20Study-novachat--es--ca--lqa-6366f1?style=flat&logo=github)](https://github.com/EduardTranslates/novachat-es-ca-lqa)
+Live companion web application for the [**NovaChat ES/CA Localization QA Case Study**](https://github.com/EduardTranslates/novachat-es-ca-lqa).
 
-Interactive web application and live ES/CA localization QA lab built on top of the **[novachat-es-ca-lqa](https://github.com/EduardTranslates/novachat-es-ca-lqa)** synthetic case study.
+🚀 **Live App:** <https://novachat-es-ca-lqa.vercel.app/>
 
-> **Live app:** [https://novachat-es-ca-lqa.vercel.app/](https://novachat-es-ca-lqa.vercel.app/)
+---
 
-<!-- Optional: drop 2 screenshots into public/screenshots/ and uncomment below
-![NovaChat Dashboard Overview](public/screenshots/overview.png)
-![Live Python LQA Checker & Baseline vs. Grounded Sandbox](public/screenshots/live-tools.png)
--->
+## What's Inside
 
-## What You Can Explore
+1. **Executive Overview:** Core empirical finding (*Grounding fixes facts. It doesn't fix language.*), paired baseline vs. 5 grounded runs (`8 → 0` Critical hallucinations), separated dataset KPIs, and 3-layer QA detection split.
+2. **Live NovaChat Sandbox (`Live AI`):** Side-by-side **Baseline vs. Grounded** comparison powered by Gemini API (with automatic quota fallback), 6 one-click ES/CA adversarial traps, and real-time `lqa_checks.py` scanning on every reply.
+3. **Live LQA Checker (`Python 3.12 Serverless`):** Executes zero-dependency Python regression rules directly in Vercel Serverless (`0.45–1.63 ms`) with switchable **Core (6 terms)** and **Extended SaaS & Support (56 terms)** ES/CA glossaries, batch 20-string parity audit, and optional Layer 2 AI semantic/grammar review.
+4. **MQM Defect Explorer (`28`):** Filterable log of the 28 initial product audit defects (`es-ES` / `ca-ES`), rationales, recommended fixes, and detection layers.
+5. **4-Model Eval Comparator (`72`):** Side-by-side explorer of all 6 runs (1 ungrounded baseline on Flash-Lite + 5 grounded runs across Gemini 3.5 Flash-Lite, Gemini 3.8 Flash, NVIDIA Nemotron 3 Ultra, and Baidu ERNIE 5.5 Flash) including `QUERY` Product Owner escalations.
+6. **LLM Judge Calibration (`20/20`):** Compares replaced regex (`14/20`), broadened access regex (`16/20`), and calibrated LLM-as-a-judge (`20/20` on the single-reviewer calibration set) with transparent methodology notes.
+7. **Trilingual Project Story (`EN | ES | CA`):** Jargon-free, 1-minute transcreated walk-through with collapsible navigation for mobile and desktop.
 
-The sticky header supports two-row grouped navigation (collapsible on mobile and desktop for distraction-free reading):
+---
 
-### Row 1 — Start & Live Interactive Tools
-1. **Executive Overview:** Core empirical finding (*"Grounding fixes facts. It doesn't fix language."*), 6-run performance across 4 distinct LLMs, 3-layer QA detection architecture, and methodological scope.
-2. **Project Story (1-Minute Read · EN / ES / CA):** A jargon-free, chart-free narrative walk-through (*When It Began · How It Works · What Happened · Why It Matters · Who Built This*) transcreated across English, Spanish (`es-ES`), and Catalan (`ca-ES`).
-3. **Live NovaChat Sandbox (Phase 3):** Toggle in real time between the ungrounded **Baseline** prompt (`prompt_baseline.yaml`) and the **Grounded** P0 fix (`prompt.yaml`), or run **Compare Both** side by side. Every bot reply is automatically scanned by `lqa_checks.py`. Includes automatic model rotation, rate limiting, and graceful fallback to authentic recorded replays if free-tier quota is exhausted.
-4. **Live LQA Checker (Phase 2 — Python Serverless):** Executes the zero-dependency `lqa_checks.py` engine directly on Vercel (`api/lqa_check.py`) with two switchable profiles:
-   - **NovaChat Core (6 terms):** Exact parity with `qa_report.csv` (14 issues across 12 defective strings, 0 false positives on 8 clean strings).
-   - **Extended SaaS & Support (56 terms):** Curated EN → `es-ES`/`ca-ES` UI and customer-support terminology, expanded Catalan Castilianism lists, and IEC 2016 obsolete diacritics — plus optional **Auto-Translate** and **AI Semantic & Grammar Audit (Layer 2)**.
+## Data Universes & Methodological Notes
 
-### Row 2 — Recorded Audit Evidence
-5. **MQM Defect Explorer (28 Defects):** Filterable inspector across `es-ES` and `ca-ES`, severity, MQM category, and detection layer, with before/after fixes and deep links to Promptfoo test cases.
-6. **4-Model Eval Comparator (72 Recorded Answers):** Side-by-side comparison across all 12 test cases (`EC-001`–`EC-012`) and a filterable 72-answer Audit Matrix isolating the 2 Catalan grammar blind spots, 6 Product Owner `QUERY` escalations, and 7 grounded failures.
-7. **LLM Judge Calibration (20 Answers):** Side-by-side comparison of the replaced regex pair (`14/20`), the broadened access regex alone (`16/20`), and the calibrated `gemini-3.5-flash` judge (`20/20`).
+* **Initial MQM Audit Inventory (28 defects):** Synthetic UI strings, system messages, and 30 initial AI replies per locale (includes the 3 Critical AI archetypes `D-002`, `D-005`, `D-006`). The `61% / 14% / 25%` 3-layer split reflects primary detection-layer attribution across these 28 logged defects.
+* **Real-Model Evaluation (72 answers):** 12 ES/CA cases × 6 recorded runs (**1 ungrounded baseline** on Flash-Lite with 8 Critical hallucinations vs. **5 grounded runs** across 4 models with 0 Critical hallucinations).
+* **Auto vs. Human Agreement (`70/72`):** Response-level binary pass/fail agreement. Both misses were **Auto PASS / Human FAIL** Catalan grammar errors (`se'te cobrarà` → `se't cobrarà`; `escrivim` → `escriu`). The 6 `QUERY` labels are unverified policy extrapolations escalated to a Product Owner (PO).
+* **Judge Calibration (`20/20`):** Agreement on the single-reviewer calibration set (not an independent held-out set).
 
-## Evaluation & Judge Calibration Method
+---
 
-To evaluate partial-month refund policy compliance (`EC-005` in `es-ES` and `EC-006` in `ca-ES`), the deterministic negation regex was replaced with a versioned LLM-as-a-judge rubric (`gemini-3.5-flash`, temperature 0) calibrated against **20 human-labelled answers**: 6 mock fixtures, 8 real recorded Gemini outputs, and 6 synthetic adversarial traps (`JC-15`–`JC-20`, covering deceptive leading negations, hidden store-credit offers, open support exceptions, and self-contradictions).
+## Tech Stack & Local Setup
 
-- **Replaced pre-judge regex pair:** `14/20` (4 false positives on traps, 2 false negatives on valid wording variants).
-- **Current broadened access regex alone:** `16/20` (still passes all 4 deceptive traps).
-- **Calibrated LLM judge & production suite:** `20/20` (`0` false positives, `0` false negatives).
-
-> **Honest limitation:** The same bilingual reviewer authored the cases, rubric, and traps. `20/20` validates rubric sanity rather than providing an independent population accuracy benchmark. See [evals/RESULTS.md](https://github.com/EduardTranslates/novachat-es-ca-lqa/blob/main/evals/RESULTS.md) for the full audit trail.
-
-## Environment Variables (Vercel)
-
-All static dashboard views and the **Python Live LQA Checker (Layer 1)** work with **zero API keys**. To activate live custom prompts in the **NovaChat Sandbox** and **AI Layer 2** tools, configure `GEMINI_API_KEY` in **Vercel → Project Settings → Environment Variables**:
-
-| Variable | Required? | Purpose |
-| :--- | :--- | :--- |
-| `GEMINI_API_KEY` | Optional (enables Live AI) | Google AI Studio key for live chatbot replies, EN→ES/CA translation, and Layer 2 semantic LQA audits |
-| `GEMINI_CHAT_MODELS` | Optional override | Comma-separated model rotation list (default: `gemini-3.5-flash-lite,gemini-3.8-flash,gemini-3.5-flash,gemini-2.5-flash-lite,gemini-2.5-flash`) |
-| `GEMINI_LQA_MODELS` | Optional override | Comma-separated model rotation list for Layer 2 semantic audits (default: `gemini-3.8-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-2.5-flash`) |
-
-## Run Locally & Verify Integrity
-
-Requires **Node.js `26.x`** and **Python `3.10+`**:
+* **Frontend:** Next.js 14 (App Router), React, TypeScript, Tailwind CSS (`Node.js 26.x`)
+* **Serverless LQA Backend:** Vercel Python 3.12 Runtime (`api/lqa_check.py`)
+* **CI Integrity Testing:** GitHub Actions (`scripts/test_integrity.py` + `raw-data/lqa-checker/test_lqa_checks.py`)
 
 ```bash
-# 1. Regenerate compiled JSON + Python serverless data module & run integrity tests
-python scripts/build_data.py
-python scripts/test_integrity.py
-
-# 2. Start Next.js development server
 npm install
 npm run dev
 ```
 
-To extend the dataset (e.g., add a new MQM defect, eval case, or glossary term), edit the source files under `raw-data/` and re-run `python scripts/build_data.py` followed by `python scripts/test_integrity.py`.
+### Environment Variables (Optional — Live AI Features)
+
+| Variable | Required | Purpose |
+| :--- | :---: | :--- |
+| `GEMINI_API_KEY` | Optional | Enables live Gemini API replies in the Sandbox and Layer 2 AI semantic checks (graceful recorded fallback if omitted). |
 
 ---
 
-*Author: [Eduard Aliod Gil](https://www.linkedin.com/in/eduardtranslates/) — Localization Specialist & AI QA Reviewer (ES / CA / EN)*
+## Authorship & AI-Assistance Note
+
+Evaluation architecture, MQM audit, defect rationales, bilingual ES/CA glossaries (6 Core + 56 Extended terms), deterministic Python LQA rules, Promptfoo cases, calibration traps, and 100% of human review (72 answers + 20 calibration labels) were designed, written, and verified by **Eduard Aliod Gil**. AI coding assistance was used to accelerate frontend scaffolding for this Next.js companion web UI.
+
+## License
+
+MIT License — see [`novachat-es-ca-lqa`](https://github.com/EduardTranslates/novachat-es-ca-lqa) for full dataset provenance and third-party model output exclusions.
