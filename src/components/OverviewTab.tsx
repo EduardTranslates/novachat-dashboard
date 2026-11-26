@@ -86,7 +86,7 @@ export function OverviewTab({
                 className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-navy-950 font-semibold px-3.5 py-2 text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-[0.99] shrink-0"
               >
                 <BookOpen className="h-4 w-4" />
-                1-Minute Read
+                2-Minute Read
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>

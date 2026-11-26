@@ -88,7 +88,7 @@ export function DashboardClient({ data }: { data: NovaChatData }) {
     {
       id: "story",
       label: "Project Story",
-      badge: "1 min",
+      badge: "2 min",
       badgeAccent: "emerald",
       icon: <BookOpen className="h-4 w-4" />,
     },
